@@ -1,0 +1,102 @@
+services:
+
+  ecommerce-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce-app
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    ports:
+      - "5050:5050"
+    networks:
+      - ecommerce-network
+    depends_on:
+      flyway:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: db-ecommerce
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5051:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  flyway:
+    image: flyway/flyway
+    container_name: flyway-migrator-ecommerce
+    environment:
+      - FLYWAY_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - FLYWAY_USER=${POSTGRES_USER}
+      - FLYWAY_PASSWORD=${POSTGRES_PASSWORD}
+    command: migrate
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql
+    networks:
+      - ecommerce-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin-ecommerce
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "5052:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - ecommerce-network
+    depends_on:
+      - postgres
+
+  redis:
+    image: redis:8.2.2
+    container_name: redis-cache-ecommerce
+    ports:
+      - 5053:6379
+    volumes:
+      - redis_data:/data
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  ecommerce-network:
+    driver: bridge
+
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+  redis_data:
