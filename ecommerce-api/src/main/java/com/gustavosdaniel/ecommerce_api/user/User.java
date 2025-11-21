@@ -38,6 +38,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Enumerated(EnumType.STRING)
+    private RoleUser userRole;
+
     @Column(unique = true)
     private String cpf;
 
@@ -46,7 +49,8 @@ public class User {
 
     @OneToMany(mappedBy = "user",
             fetch = FetchType.LAZY,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",
@@ -98,12 +102,16 @@ public class User {
         this.email = email;
     }
 
-    public String getCpf() {
-        return cpf;
+    public RoleUser getUserRole() {
+        return userRole;
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
+    public void setUserRole(RoleUser userRole) {
+        this.userRole = userRole;
+    }
+
+    public String getCpf() {
+        return cpf;
     }
 
     public String getPhoneNumber() {

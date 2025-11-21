@@ -42,7 +42,7 @@ public class Product {
     @OneToMany( mappedBy = "product",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             fetch = FetchType.LAZY)
-    private List<OrderItem> orderLine = new ArrayList<>();
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -96,12 +96,12 @@ public class Product {
         this.category = category;
     }
 
-    public List<OrderItem> getOrderLine() {
-        return orderLine;
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
     }
 
-    public void setOrderLine(List<OrderItem> orderLine) {
-        this.orderLine = orderLine;
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
     }
 
     public LocalDateTime getCreatedAt() {

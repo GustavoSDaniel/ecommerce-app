@@ -1,51 +1,45 @@
-package com.gustavosdaniel.ecommerce_api.order;
+package com.gustavosdaniel.ecommerce_api.payment;
 
 import com.gustavosdaniel.ecommerce_api.notification.Notification;
-import com.gustavosdaniel.ecommerce_api.orderItem.OrderItem;
-import com.gustavosdaniel.ecommerce_api.payment.Payment;
-import com.gustavosdaniel.ecommerce_api.user.User;
+import com.gustavosdaniel.ecommerce_api.order.Order;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "orders")
-public class Order {
-
-    public Order() {}
+public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String reference;
 
-    @OneToMany(mappedBy = "order",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-            fetch = FetchType.LAZY)
-    private List<OrderItem> orderItems = new ArrayList<>();
+    @Column(nullable = false)
+    private BigDecimal amount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentStatus status;
 
-    @OneToMany(mappedBy = "order",
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentMethod paymentMethod;
+
+    @OneToMany(mappedBy = "payment",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             fetch = FetchType.LAZY)
     private List<Notification> notifications = new ArrayList<>();
 
-    @OneToOne
-    @JoinColumn(name = "payment_id")
-    private Payment payment;
+    @OneToOne(mappedBy = "payment", cascade = CascadeType.PERSIST)
+    private Order order;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -67,20 +61,28 @@ public class Order {
         this.reference = reference;
     }
 
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 
-    public User getUser() {
-        return user;
+    public PaymentStatus getStatus() {
+        return status;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setStatus(PaymentStatus status) {
+        this.status = status;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public List<Notification> getNotifications() {
@@ -91,12 +93,12 @@ public class Order {
         this.notifications = notifications;
     }
 
-    public Payment getPayment() {
-        return payment;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setPayment(Payment payment) {
-        this.payment = payment;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -114,8 +116,8 @@ public class Order {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Order order = (Order) o;
-        return Objects.equals(id, order.id);
+        Payment payment = (Payment) o;
+        return Objects.equals(id, payment.id);
     }
 
     @Override

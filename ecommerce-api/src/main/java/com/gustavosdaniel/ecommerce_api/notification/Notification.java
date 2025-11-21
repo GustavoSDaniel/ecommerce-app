@@ -1,49 +1,41 @@
-package com.gustavosdaniel.ecommerce_api.order;
+package com.gustavosdaniel.ecommerce_api.notification;
 
-import com.gustavosdaniel.ecommerce_api.notification.Notification;
-import com.gustavosdaniel.ecommerce_api.orderItem.OrderItem;
+import com.gustavosdaniel.ecommerce_api.order.Order;
 import com.gustavosdaniel.ecommerce_api.payment.Payment;
-import com.gustavosdaniel.ecommerce_api.user.User;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "orders")
-public class Order {
-
-    public Order() {}
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)
-    private String reference;
+    private String sender;
 
-    @OneToMany(mappedBy = "order",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-            fetch = FetchType.LAZY)
-    private List<OrderItem> orderItems = new ArrayList<>();
+    @Column(nullable = false)
+    private String recipient;
+
+    @Column(nullable = false)
+    private String content;
+
+    @Column(nullable = false)
+    private LocalDateTime sentAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
 
-    @OneToMany(mappedBy = "order",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-            fetch = FetchType.LAZY)
-    private List<Notification> notifications = new ArrayList<>();
-
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
@@ -59,36 +51,44 @@ public class Order {
         return id;
     }
 
-    public String getReference() {
-        return reference;
+    public String getSender() {
+        return sender;
     }
 
-    public void setReference(String reference) {
-        this.reference = reference;
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
+    public String getRecipient() {
+        return recipient;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public void setRecipient(String recipient) {
+        this.recipient = recipient;
     }
 
-    public User getUser() {
-        return user;
+    public String getContent() {
+        return content;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public List<Notification> getNotifications() {
-        return notifications;
+    public LocalDateTime getSentAt() {
+        return sentAt;
     }
 
-    public void setNotifications(List<Notification> notifications) {
-        this.notifications = notifications;
+    public void setSentAt(LocalDateTime sentAt) {
+        this.sentAt = sentAt;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public Payment getPayment() {
@@ -114,8 +114,8 @@ public class Order {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Order order = (Order) o;
-        return Objects.equals(id, order.id);
+        Notification that = (Notification) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
