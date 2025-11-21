@@ -13,6 +13,8 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/${KEYCLOAK_REALM_NAME}
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_AUDIENCE=ecommerce-api
     ports:
       - "5050:5050"
     networks:
@@ -22,6 +24,8 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+      keycloak:
+        condition: service_started
 
   postgres:
     image: postgres:16-alpine
@@ -91,6 +95,51 @@ services:
       timeout: 5s
       retries: 5
 
+  keycloak:
+    image: keycloak/keycloak:26.0
+    container_name: keycloak-ecommerce
+    command:
+      - start
+      #- --optimized
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/${POSTGRES_DB_KEYCLOAK}
+      KC_DB_USERNAME: ${POSTGRES_USER_KEYCLOAK}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD_KEYCLOAK}
+      KC_HOSTNAME: http://localhost:5054
+      KC_HTTP_PORT: 8080
+      KC_PROXY: edge
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    ports:
+      - "5054:8080"
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+
+
+  keycloak-db:
+    image: postgres:16-alpine
+    container_name: keycloak-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB_KEYCLOAK}
+      POSTGRES_USER: ${POSTGRES_USER_KEYCLOAK}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_KEYCLOAK}
+    ports:
+      - "5055:5432"
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER_KEYCLOAK} -d ${POSTGRES_DB_KEYCLOAK}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 networks:
   ecommerce-network:
     driver: bridge
@@ -100,3 +149,4 @@ volumes:
   postgres_data:
   pgadmin_data:
   redis_data:
+  keycloak_data:

@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: encurtador-url
+    name: ecommerce-api
 
   datasource:
     url: jdbc:postgresql://postgres:5432/${POSTGRES_DB}

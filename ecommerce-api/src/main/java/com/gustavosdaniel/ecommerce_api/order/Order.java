@@ -1,6 +1,7 @@
 package com.gustavosdaniel.ecommerce_api.order;
 
 import com.gustavosdaniel.ecommerce_api.orderItem.OrderItem;
+import com.gustavosdaniel.ecommerce_api.user.User;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "orders")
 public class Order {
 
     public Order() {}
@@ -28,7 +30,11 @@ public class Order {
     @OneToMany(mappedBy = "order",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             fetch = FetchType.LAZY)
-    private List<OrderItem> orderLines = new ArrayList<>();
+    private List<OrderItem> orderItems = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
