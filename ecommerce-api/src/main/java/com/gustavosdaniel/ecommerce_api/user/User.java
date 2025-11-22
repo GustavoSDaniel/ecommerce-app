@@ -3,6 +3,10 @@ package com.gustavosdaniel.ecommerce_api.user;
 import com.gustavosdaniel.ecommerce_api.address.Address;
 import com.gustavosdaniel.ecommerce_api.order.Order;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -22,6 +26,12 @@ public class User implements UserDetails {
 
     }
 
+    public User(String userName, String password, String email) {
+        this.userName = userName;
+        this.password = password;
+        this.email = email;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -37,7 +47,7 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RoleUser userRole;
+    private UserRole userRole;
 
     @Column(unique = true)
     private String cpf;
@@ -123,11 +133,11 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public RoleUser getUserRole() {
+    public UserRole getUserRole() {
         return userRole;
     }
 
-    public void setUserRole(RoleUser userRole) {
+    public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
     }
 

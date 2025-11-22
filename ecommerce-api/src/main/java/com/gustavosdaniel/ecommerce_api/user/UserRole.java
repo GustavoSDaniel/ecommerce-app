@@ -1,6 +1,6 @@
 package com.gustavosdaniel.ecommerce_api.user;
 
-public enum RoleUser {
+public enum UserRole {
 
     CUSTOMER,
     ADMIN,

@@ -14,4 +14,7 @@ CREATE TABLE user_ (
 
                        created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                        updated_at TIMESTAMP WITHOUT TIME ZONE
+
 );
+
+CREATE INDEX idx_user_role ON user_(user_role);
