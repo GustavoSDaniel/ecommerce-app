@@ -1,6 +1,8 @@
 package com.gustavosdaniel.ecommerce_api.exception;
 
 import com.gustavosdaniel.ecommerce_api.user.EmailUserDuplicationException;
+import com.gustavosdaniel.ecommerce_api.user.UserNotAuthorizationException;
+import com.gustavosdaniel.ecommerce_api.user.UserNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,5 +53,33 @@ public class GlobalExceptionHandle {
                 null);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
+
+        log.warn("User not found {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse(
+                "Usuário não encontrado",
+                "Usuário com o ID informado não existente",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(UserNotAuthorizationException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotAuthorizationException(
+            UserNotAuthorizationException ex) {
+
+        log.warn("User not authorized {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("Usuário não autorizado",
+                "Usuário não tem permissáo para executar essa função",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 }

@@ -1,0 +1,7 @@
+### DELETE request to example server
+
+DELETE http://localhost:5050/api/v1/user/ID
+Authorization: Bearer <SEU_TOKEN_AQUI>
+
+
+

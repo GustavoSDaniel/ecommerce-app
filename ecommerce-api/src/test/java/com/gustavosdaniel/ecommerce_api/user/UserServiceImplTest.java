@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -90,6 +91,55 @@ class UserServiceImplTest {
             verifyNoInteractions(userMapper);
         }
 
+    }
+
+    @Nested
+    class allUsers {
+
+        @Test
+        @DisplayName("Should return all users")
+        void shouldReturnAllUsers() {
+
+        }
+    }
+
+    @Nested
+    class deleteUser {
+
+        @Test
+        @DisplayName("Should delete user")
+        void shouldDeleteUser() {
+
+            UUID uuid = UUID.randomUUID();
+            String password = "senha123";
+            String email = "gustavosdanieel@hotmail.com";
+
+            User deleteUser = new User("Gustavo", password, email);
+            deleteUser.setUserRole(UserRole.ADMIN);
+            ReflectionTestUtils.setField(deleteUser, "id", uuid);
+
+            when(userRepository.findById(uuid)).thenReturn(Optional.of(deleteUser));
+
+            userService.deleteUserById(uuid);
+
+            verify(userRepository).findById(uuid);
+            verify(userRepository).delete(deleteUser);
+
+        }
+
+        @Test
+        @DisplayName("Should throw exception when user not found")
+        void shouldThrowExceptionWhenUserNotFound() {
+
+            UUID uuid = UUID.randomUUID();
+
+            when(userRepository.findById(uuid)).thenReturn(Optional.empty());
+            assertThrows(UserNotFoundException.class, () -> {
+                userService.deleteUserById(uuid);
+            });
+
+            verify(userRepository).findById(uuid);
+        }
     }
 
 }

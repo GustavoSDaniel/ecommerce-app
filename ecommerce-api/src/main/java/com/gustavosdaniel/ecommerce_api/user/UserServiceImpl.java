@@ -2,7 +2,11 @@ package com.gustavosdaniel.ecommerce_api.user;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -37,6 +41,36 @@ public class UserServiceImpl implements UserService {
 
         return userMapper.toUserRegisterResponse(userRegister);
     }
+
+    @Override
+    public Page<UserRegisterResponse> getUsers(Pageable pageable) {
+
+        log.info("Get users {}", pageable);
+
+        Page<User> users = userRepository.findAll(pageable);
+
+        if (users.isEmpty()) {
+            return Page.empty();
+        }
+
+        log.info("Retornou users {}", users);
+
+        return users.map(userMapper::toUserRegisterResponse);
+    }
+
+    @Override
+    public void deleteUserById(UUID id) {
+
+        log.info("Delete user {}", id);
+
+        User deletedUser = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+
+        userRepository.delete(deletedUser);
+
+        log.info("Deleted user sucesso {}", deletedUser.getUserName());
+
+    }
+
 
     private UserRole getUserRole() {
 
