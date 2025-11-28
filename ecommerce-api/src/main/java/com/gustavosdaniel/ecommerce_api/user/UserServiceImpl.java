@@ -19,9 +19,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserRegisterResponse register(UserRegisterRequest user) {
 
-        log.debug("Register user {}", user);
+        log.info("Register user {}", user.userName());
 
         if (userRepository.existsByEmail(user.email())){
+
+            log.error("Usuário com esse email {} já existe", user.email());
 
             throw new EmailUserDuplicationException();
         }
@@ -31,7 +33,7 @@ public class UserServiceImpl implements UserService {
 
         User userRegister = userRepository.save(newUser);
 
-        log.debug("Saved user {}", userRegister);
+        log.info("Saved user {}", userRegister);
 
         return userMapper.toUserRegisterResponse(userRegister);
     }
