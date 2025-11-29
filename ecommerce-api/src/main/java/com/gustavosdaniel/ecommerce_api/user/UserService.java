@@ -9,7 +9,7 @@ public interface UserService {
 
     UserRegisterResponse register(UserRegisterRequest user);
 
-    Page<UserRegisterResponse> getUsers(Pageable pageable);
+    Page<UserResponse> getUsers(Pageable pageable);
 
     void deleteUserById(UUID id);
 }

@@ -43,9 +43,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserRegisterResponse> getUsers(Pageable pageable) {
+    public Page<UserResponse> getUsers(Pageable pageable) {
 
-        log.info("Get users {}", pageable);
+        log.info("Buscando todos os usuários");
 
         Page<User> users = userRepository.findAll(pageable);
 
@@ -53,9 +53,9 @@ public class UserServiceImpl implements UserService {
             return Page.empty();
         }
 
-        log.info("Retornou users {}", users);
+        log.info("Retornou users {}", users.getNumberOfElements());
 
-        return users.map(userMapper::toUserRegisterResponse);
+        return users.map(userMapper::toUserResponse);
     }
 
     @Override

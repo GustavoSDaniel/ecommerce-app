@@ -48,8 +48,11 @@ public class SecurityConfig {
                                 .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                                 .requestMatchers(PUBLIC_URLS).permitAll()
 
+                                .requestMatchers(HttpMethod.GET, "/api/v1/users/**")
+                                .hasAnyRole("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "api/v1/users/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
+
 
                                 //TODO os outros endpoiunts
 

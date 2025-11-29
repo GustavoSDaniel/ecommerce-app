@@ -40,4 +40,22 @@ public class UserMapper {
 
         );
     }
+
+    public UserResponse toUserResponse(User user) {
+
+        if (user == null) {
+            return null;
+        }
+
+        return new UserResponse(
+
+                user.getId(),
+                user.getUserName(),
+                user.getEmail(),
+                user.getUserRole()
+
+        );
+    }
+
+
 }
