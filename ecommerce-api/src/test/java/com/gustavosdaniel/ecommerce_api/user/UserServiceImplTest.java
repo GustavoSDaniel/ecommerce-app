@@ -9,9 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
@@ -34,9 +32,6 @@ class UserServiceImplTest {
 
     @Mock
     private UserMapper userMapper;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -180,6 +175,41 @@ class UserServiceImplTest {
             });
 
             verify(userRepository).findById(uuid);
+        }
+    }
+
+    @Nested
+    class FindByEmail {
+
+        @Test
+        @DisplayName("Should return user")
+        void shouldReturnUser() {
+
+            UUID uuid = UUID.randomUUID();
+            String email = "gustavosdaniel@hotmail.com";
+            String password = "senha123";
+
+            User user = new User("Gustavo", password, email);
+            user.setUserRole(UserRole.CUSTOMER);
+            ReflectionTestUtils.setField(user, "id", uuid);
+
+            UserResponse userResponse = new UserResponse(
+                    uuid, "Gustavo", email, UserRole.CUSTOMER);
+
+            when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+
+            when(userMapper.toUserResponse(user)).thenReturn(userResponse);
+
+            Optional<UserResponse> output = userService.getUserByEmail(email);
+
+            assertTrue(output.isPresent());
+
+            assertEquals(email, output.get().email());
+            assertEquals(uuid, output.get().id());
+
+            verify(userRepository).findByEmail(email);
+            verify(userMapper).toUserResponse(user);
+
         }
     }
 

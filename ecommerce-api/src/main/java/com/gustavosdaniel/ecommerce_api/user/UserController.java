@@ -2,6 +2,7 @@ package com.gustavosdaniel.ecommerce_api.user;
 
 import com.gustavosdaniel.ecommerce_api.config.UserAuthorizationRole;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.constraints.Email;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -37,8 +39,19 @@ public class UserController {
         return ResponseEntity.ok(allUsers);
     }
 
+    @GetMapping("/email")
+    @Operation(summary = "Busca usuário pelo email")
+    public ResponseEntity<UserResponse> getUserByEmail(@RequestParam @Email String email) {
+
+        Optional<UserResponse> user = userService.getUserByEmail(email);
+
+        return user
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deletando usuário")
+    @Operation(summary = "Deleta usuário")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id, Authentication authentication) {
 
         authorizationRole.validateUserRole(id, authentication);

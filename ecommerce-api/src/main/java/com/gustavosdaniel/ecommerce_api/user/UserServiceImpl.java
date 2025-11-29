@@ -1,11 +1,13 @@
 package com.gustavosdaniel.ecommerce_api.user;
 
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,6 +23,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserRegisterResponse register(UserRegisterRequest user) {
 
         log.info("Register user {}", user.userName());
@@ -59,6 +62,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<UserResponse> getUserByEmail(String email) {
+
+        log.info("Iniciando busca de usuário pelo email: {}", email);
+
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if (user.isEmpty()) {
+            log.warn("Nenhum usuário encontrado para o email: {}", email);
+        }
+
+        return user.map(userMapper::toUserResponse);
+    }
+
+    @Override
+    @Transactional
     public void deleteUserById(UUID id) {
 
         log.info("Delete user {}", id);

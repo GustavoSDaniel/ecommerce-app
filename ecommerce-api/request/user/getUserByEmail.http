@@ -1,0 +1,5 @@
+### GET buscando usuário pelo email
+
+GET http://localhost:5050/api/v1/users/email?email=DIGITE O EMAIL AQUI
+Authorization: Bearer <SEU_TOKEN_AQUI>
+Accept: application/json
