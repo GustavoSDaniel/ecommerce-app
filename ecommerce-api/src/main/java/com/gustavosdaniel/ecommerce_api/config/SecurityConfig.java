@@ -53,7 +53,6 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "api/v1/users/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
 
-
                                 //TODO os outros endpoiunts
 
                                 .anyRequest().authenticated())

@@ -25,7 +25,7 @@ public class UserController {
         this.authorizationRole = authorizationRole;
     }
 
-    @GetMapping("/allUsers")
+    @GetMapping
     @Operation(summary = "Obter todos os usuários")
     public ResponseEntity<Page<UserResponse>>  getAllUsers(
             @ParameterObject
