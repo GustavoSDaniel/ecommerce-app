@@ -1,0 +1,39 @@
+### GET filtro de busca de usuário MULTIPLOS filtros
+
+GET http://localhost:5050/api/v1/users/searchUsers?
+    UserName=SEUNOME&role=SUAROLE&cpf=SEUCPF&phoneNumber=SEUNUMERODETELEFONE
+Authorization: Bearer <SEU_TOKEN_AQUI>
+
+
+### GET buscar por NOME
+
+GET http://localhost:5050/api/v1/users/searchUsers?userName=João
+Authorization: Bearer <SEU_TOKEN_AQUI>
+
+
+### GET buscar por ROLE
+
+GET http://localhost:5050/api/v1/users/searchUsers?role=ADMIN
+Authorization: Bearer <SEU_TOKEN_AQUI>
+
+
+### GET busca por CPF
+
+GET http://localhost:5050/api/v1/users/searchUsers?cpf=12345678900
+Authorization: Bearer <SEU_TOKEN_AQUI>
+
+
+### GET busca por TELEFONE
+
+GET http://localhost:5050/api/v1/users/searchUsers?phoneNumber=11999887766
+Authorization: Bearer <SEU_TOKEN_AQUI>
+
+
+### GET busca filtro utilizando paginação
+
+GET http://localhost:5050/api/v1/users/searchUsers?userName=Maria&page=0&size=10&sort=createdAt,desc
+Authorization: Bearer <SEU_TOKEN_AQUI>
+
+
+
+

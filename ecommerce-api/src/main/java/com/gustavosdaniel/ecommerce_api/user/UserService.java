@@ -14,5 +14,8 @@ public interface UserService {
 
     Optional<UserResponse> getUserByEmail(String email);
 
+    Page<UserResponse> searchUsers(
+            String userName, UserRole role, String cpf, String phoneNumber, Pageable pageable);
+
     void deleteUserById(UUID id);
 }

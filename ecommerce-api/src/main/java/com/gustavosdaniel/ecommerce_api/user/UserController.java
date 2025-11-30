@@ -50,6 +50,22 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/searchUsers")
+    @Operation(summary = "Buscando usuários pelo filtro de busca")
+    public ResponseEntity<Page<UserResponse>> searchUsers(
+
+            @RequestParam(required = false) String userName,
+            @RequestParam(required = false) UserRole role,
+            @RequestParam(required = false) String cpf,
+            @RequestParam(required = false) String phoneNumber,
+            @PageableDefault(size = 20, sort = "userName", direction = Sort.Direction.ASC)
+            Pageable pageable) {
+
+        Page<UserResponse> users = userService.searchUsers(userName, role, cpf, phoneNumber, pageable);
+
+        return ResponseEntity.ok(users);
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Deleta usuário")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id, Authentication authentication) {

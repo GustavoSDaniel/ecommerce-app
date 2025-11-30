@@ -9,7 +9,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
@@ -209,6 +211,53 @@ class UserServiceImplTest {
 
             verify(userRepository).findByEmail(email);
             verify(userMapper).toUserResponse(user);
+
+        }
+    }
+
+    @Nested
+    class SearchUser {
+
+        @Test
+        @DisplayName("Should return paginated users with filters")
+        void shouldReturnUser() {
+
+            UUID uuid = UUID.randomUUID();
+            String username = "Gustavo";
+            String password = "senha123";
+            String email = "gustavosdaniel@hotmail.com";
+            UserRole role = UserRole.CUSTOMER;
+            String cpf = "123.456.789-00";
+            String phoneNumber = "11999999999";
+
+            Pageable pageable = PageRequest.of(0, 10);
+
+            User user = new User(username, password, email);
+            user.setUserRole(UserRole.CUSTOMER);
+            ReflectionTestUtils.setField(user, "id", uuid);
+
+            Page<User> userPage = new PageImpl<>(Arrays.asList(user));
+
+            UserResponse userResponse = new UserResponse(
+                    uuid, "Gustavo", email, UserRole.CUSTOMER);
+
+            when(userRepository.findAll(any(Specification.class), eq(pageable)))
+                    .thenReturn(userPage);
+
+            when(userMapper.toUserResponse(user)).thenReturn(userResponse);
+
+            Page<UserResponse> output =
+                    userService.searchUsers(username, role, cpf, phoneNumber, pageable);
+
+            assertNotNull(output);
+            assertEquals(1, output.getTotalElements());
+            assertEquals(username, output.getContent().get(0).userName());
+            assertEquals(email, output.getContent().get(0).email());
+            assertEquals(role, output.getContent().get(0).role());
+
+            verify(userRepository).findAll(any(Specification.class), eq(pageable));
+            verify(userMapper).toUserResponse(user);
+
 
         }
     }
