@@ -17,5 +17,9 @@ public interface UserService {
     Page<UserResponse> searchUsers(
             String userName, UserRole role, String cpf, String phoneNumber, Pageable pageable);
 
+    UseUpdateResponse updateUser(UUID id, UserUpdateRequest user);
+
+    UserCpfResponse addCpfToUser(UUID id, UserAddCpf userAddCpf);
+
     void deleteUserById(UUID id);
 }

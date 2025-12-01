@@ -1,0 +1,6 @@
+### GET request to example server
+
+PUT http://localhost:5050/api/v1/users/cpf/{ID DO USUARIO QUE ESTA ADICIONANDO O CPF}
+Authorization: Bearer <SEU_TOKEN_AQUI>
+Content-Type: application/json
+

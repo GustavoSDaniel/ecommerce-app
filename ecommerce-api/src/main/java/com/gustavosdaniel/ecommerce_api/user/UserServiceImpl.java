@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,11 +17,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
     private final static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -89,6 +92,68 @@ public class UserServiceImpl implements UserService {
         log.info("Busca finalizada retornou os users {}", users.getNumberOfElements());
 
         return users.map(userMapper::toUserResponse);
+    }
+
+    @Override
+    @Transactional
+    public UseUpdateResponse updateUser(UUID id, UserUpdateRequest request) {
+
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+
+        if (request.email() != null && !request.email().isBlank()) {
+
+            if (!request.email().equals(user.getEmail()) &&
+                    userRepository.existsByEmail(request.email())) {
+
+                throw new EmailUserDuplicationException();
+            }
+        }
+
+       if (request.role() != null && request.role().equals(user.getUserRole())) {
+
+           log.info("Usuário já possui a role {}", user.getUserRole());       }
+
+        userMapper.updateUser(request, user);
+
+        User savedUser = userRepository.save(user);
+
+        return userMapper.toUserUpdate(savedUser);
+    }
+
+    @Override
+    @Transactional
+    public UserCpfResponse addCpfToUser(UUID id, UserAddCpf userAddCpf) {
+
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+
+        log.info("Adicionando Cpf para o usuário: {}", user.getUserName());
+
+
+        if (user.getCpf() != null && !user.getCpf().isBlank()) {
+
+            log.warn("Usuário já possui CPF cadastrado");
+
+            throw new CpfAlreadyRegisterException();
+        }
+
+        if (userAddCpf.cpf() != null && !userAddCpf.cpf().isBlank()) {
+
+            boolean existCpf = userRepository.existsByCpf(userAddCpf.cpf());
+
+            if (existCpf) {
+
+                throw new CpfExistsException();
+
+            }
+
+            user.setCpf(userAddCpf.cpf());
+        }
+
+        User savedUser = userRepository.save(user);
+
+        log.info("Cpf adicionado com sucesso");
+
+        return userMapper.toUserCpf(savedUser);
     }
 
     @Override

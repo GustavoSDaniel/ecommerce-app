@@ -57,5 +57,64 @@ public class UserMapper {
         );
     }
 
+    public void updateUser(UserUpdateRequest userUpdateRequest, User user) {
+
+        if (userUpdateRequest.userName() != null && !userUpdateRequest.userName().isBlank()) {
+
+            user.setUserName(userUpdateRequest.userName());
+        }
+
+        if (userUpdateRequest.password() != null && !userUpdateRequest.password().isBlank()) {
+
+            user.setPassword(passwordEncoder.encode(userUpdateRequest.password()));
+        }
+
+        if (userUpdateRequest.email() != null && !userUpdateRequest.email().isBlank()) {
+
+            user.setEmail(userUpdateRequest.email());
+        }
+
+        if (userUpdateRequest.role() != null){
+
+            user.setUserRole(userUpdateRequest.role());
+        }
+
+        if (userUpdateRequest.phoneNumber() != null && !userUpdateRequest.phoneNumber().isBlank()) {
+
+            user.setPhoneNumber(userUpdateRequest.phoneNumber());
+        }
+    }
+
+    public UseUpdateResponse toUserUpdate(User user) {
+        if (user == null) {
+            return null;
+        }
+
+        return new UseUpdateResponse(
+                user.getId(),
+                user.getUserName(),
+                user.getEmail(),
+                user.getUserRole(),
+                user.getPhoneNumber()
+        );
+    }
+
+    public UserCpfResponse toUserCpf (User user) {
+
+        if (user == null) {
+            return null;
+        }
+
+        return new UserCpfResponse(
+
+                user.getId(),
+                user.getUserName(),
+                user.getEmail(),
+                user.getUserRole(),
+                user.getCpf()
+
+        );
+    }
+
 
 }

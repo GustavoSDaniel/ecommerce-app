@@ -1,9 +1,6 @@
 package com.gustavosdaniel.ecommerce_api.exception;
 
-import com.gustavosdaniel.ecommerce_api.user.EmailUserDuplicationException;
-import com.gustavosdaniel.ecommerce_api.user.UserNotAuthorizationException;
-import com.gustavosdaniel.ecommerce_api.user.UserNotFoundException;
-import jakarta.validation.ConstraintViolationException;
+import com.gustavosdaniel.ecommerce_api.user.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -81,5 +78,29 @@ public class GlobalExceptionHandle {
                 null);
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    @ExceptionHandler(CpfExistsException.class)
+    public ResponseEntity<ErrorResponse> handleCpfExistsException(CpfExistsException ex) {
+        log.warn("Cpf existente {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("CPF em uso",
+                "Já existe um usuário com esse numero de CPF cadastrado",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(CpfAlreadyRegisterException.class)
+    public ResponseEntity<ErrorResponse> handleCpfAlreadyRegisterException(CpfAlreadyRegisterException ex) {
+        log.warn("Cpf existente {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("CPF já cadastrado",
+                "Usuário já tem o CPF cadastrado",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 }

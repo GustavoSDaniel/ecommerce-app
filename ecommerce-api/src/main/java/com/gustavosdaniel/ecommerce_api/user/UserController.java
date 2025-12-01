@@ -2,6 +2,7 @@ package com.gustavosdaniel.ecommerce_api.user;
 
 import com.gustavosdaniel.ecommerce_api.config.UserAuthorizationRole;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -64,6 +65,21 @@ public class UserController {
         Page<UserResponse> users = userService.searchUsers(userName, role, cpf, phoneNumber, pageable);
 
         return ResponseEntity.ok(users);
+    }
+
+    @PutMapping("/cpf/{id}")
+    @Operation(summary = "Adiciona CPF para o usuário")
+    public ResponseEntity<UserCpfResponse> addCpf(
+            @PathVariable UUID id,
+            @RequestBody @Valid UserAddCpf userAddCpf,
+            Authentication authentication) {
+
+        authorizationRole.validateUserRole(id, authentication);
+
+        UserCpfResponse user = userService.addCpfToUser(id, userAddCpf);
+
+        return ResponseEntity.ok(user);
+
     }
 
     @DeleteMapping("/{id}")

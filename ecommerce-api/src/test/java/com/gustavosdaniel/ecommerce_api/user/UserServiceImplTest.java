@@ -262,4 +262,69 @@ class UserServiceImplTest {
         }
     }
 
+    @Nested
+    class AddCpfToUser {
+
+        @Test
+        @DisplayName("Should add CPF in te user")
+        void shouldReturnUser() {
+
+            UUID uuid = UUID.randomUUID();
+            String email = "gustavosdaniel@hotmail.com";
+            String password = "senha123";
+            String cpf = "123.456.789-00";
+
+            User user = new User("Gustavo", password, email);
+            user.setUserRole(UserRole.CUSTOMER);
+            ReflectionTestUtils.setField(user, "id", uuid);
+
+            UserAddCpf userAddCpf = new UserAddCpf(cpf);
+
+            UserCpfResponse userResponse = new UserCpfResponse(
+                    uuid, "Gustavo", email, UserRole.CUSTOMER, cpf);
+
+            when(userRepository.findById(uuid)).thenReturn(Optional.of(user));
+
+            when(userRepository.existsByCpf("123.456.789-00")).thenReturn(false);
+
+            when(userRepository.save(any(User.class))).thenReturn(user);
+
+            when(userMapper.toUserCpf(user)).thenReturn(userResponse);
+
+            UserCpfResponse output = userService.addCpfToUser(uuid,userAddCpf );
+
+            assertNotNull(output);
+            assertEquals(cpf, output.cpf());
+
+            verify(userRepository).findById(uuid);
+            verify(userRepository).existsByCpf("123.456.789-00");
+            verify(userRepository).save(any(User.class));
+            verify(userMapper).toUserCpf(user);
+        }
+
+        @Test
+        @DisplayName("Should throw exception when cpf já em uso")
+        void shouldThrowExceptionCpfJaEmUso() {
+
+            UUID uuid = UUID.randomUUID();
+            String email = "gustavosdaniel@hotmail.com";
+            String password = "senha123";
+            String cpf = "123.456.789-00";
+
+            User user = new User("Gustavo", password, email);
+            user.setUserRole(UserRole.CUSTOMER);
+            ReflectionTestUtils.setField(user, "id", uuid);
+
+            UserAddCpf userAddCpf = new UserAddCpf(cpf);
+
+            when(userRepository.findById(uuid)).thenReturn(Optional.of(user));
+            when(userRepository.existsByCpf("123.456.789-00")).thenReturn(true);
+
+            UserCpfResponse output = userService.addCpfToUser(uuid,userAddCpf );
+
+            assertNotNull(output);
+
+        }
+    }
+
 }
