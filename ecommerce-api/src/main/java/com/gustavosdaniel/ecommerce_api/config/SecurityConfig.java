@@ -50,6 +50,8 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.GET, "/api/v1/users/**")
                                 .hasAnyRole("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/api/v1/users/userUpdate/**")
+                                .hasAnyRole("ADMIN", "CUSTOMER")
                                 .requestMatchers(HttpMethod.PUT,"/api/v1/users/cpf/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
                                 .requestMatchers(HttpMethod.DELETE, "api/v1/users/**")

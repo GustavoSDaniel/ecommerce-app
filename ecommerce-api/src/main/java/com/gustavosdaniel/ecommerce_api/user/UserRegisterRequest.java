@@ -14,6 +14,7 @@ public record UserRegisterRequest(
         String userName,
 
         @NotBlank(message = "A senha do usuário é obrigatório")
+        @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres")
         String password,
 
         @Email(message = "Formato do emaill é obrigatório")

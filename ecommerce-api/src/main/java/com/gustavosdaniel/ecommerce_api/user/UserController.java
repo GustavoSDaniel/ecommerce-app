@@ -67,6 +67,21 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @PutMapping("/userUpdate/{id}")
+    @Operation(summary = "Atualiza informações do usuário")
+    public ResponseEntity<UserUpdateResponse> updateUser(
+            @PathVariable UUID id,
+            @RequestBody @Valid UserUpdateRequest request,
+            Authentication authentication){
+
+        authorizationRole.validateUserRole(id, authentication);
+
+        UserUpdateResponse userUpdateResponse = userService.updateUser(id, request);
+
+        return ResponseEntity.ok(userUpdateResponse);
+
+    }
+
     @PutMapping("/cpf/{id}")
     @Operation(summary = "Adiciona CPF para o usuário")
     public ResponseEntity<UserCpfResponse> addCpf(

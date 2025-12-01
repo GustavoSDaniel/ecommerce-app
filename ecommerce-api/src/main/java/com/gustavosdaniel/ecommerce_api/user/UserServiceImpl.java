@@ -1,14 +1,16 @@
 package com.gustavosdaniel.ecommerce_api.user;
 
+import com.gustavosdaniel.ecommerce_api.address.Address;
+import com.gustavosdaniel.ecommerce_api.address.AddressMapper;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,13 +19,14 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
+    private final AddressMapper addressMapper;
     private final static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, AddressMapper addressMapper) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
+
+        this.addressMapper = addressMapper;
     }
 
     @Override
@@ -96,9 +99,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UseUpdateResponse updateUser(UUID id, UserUpdateRequest request) {
+    public UserUpdateResponse updateUser(UUID id, UserUpdateRequest request) {
 
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+
+        log.info("Atualizando usuário");
 
         if (request.email() != null && !request.email().isBlank()) {
 
@@ -115,7 +120,26 @@ public class UserServiceImpl implements UserService {
 
         userMapper.updateUser(request, user);
 
+       if (request.address() != null) {
+
+           if (user.getAddresses() == null) {
+
+               user.setAddresses(new ArrayList<>());
+           }
+
+           Address newAddress = addressMapper.toAddress(request.address());
+
+           newAddress.setUser(user);
+
+           user.getAddresses().add(newAddress);
+
+           log.info("Adicionando um novo endereço para o Usuário");
+
+       }
+
         User savedUser = userRepository.save(user);
+
+       log.info("Usuário {} atualizado com sucesso ", savedUser.getUserName());
 
         return userMapper.toUserUpdate(savedUser);
     }

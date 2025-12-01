@@ -1,14 +1,20 @@
 package com.gustavosdaniel.ecommerce_api.user;
 
+import com.gustavosdaniel.ecommerce_api.address.AddressMapper;
+import com.gustavosdaniel.ecommerce_api.address.AddressResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class UserMapper {
 
+    private final AddressMapper addressMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserMapper(PasswordEncoder passwordEncoder) {
+    public UserMapper(AddressMapper addressMapper, PasswordEncoder passwordEncoder) {
+        this.addressMapper = addressMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -85,17 +91,23 @@ public class UserMapper {
         }
     }
 
-    public UseUpdateResponse toUserUpdate(User user) {
+    public UserUpdateResponse toUserUpdate(User user) {
         if (user == null) {
             return null;
         }
 
-        return new UseUpdateResponse(
+        List<AddressResponse> addresses = user.getAddresses()
+                .stream()
+                .map(addressMapper::toAddressResponse)
+                .toList();
+
+        return new UserUpdateResponse(
                 user.getId(),
                 user.getUserName(),
                 user.getEmail(),
                 user.getUserRole(),
-                user.getPhoneNumber()
+                user.getPhoneNumber(),
+                addresses
         );
     }
 

@@ -1,5 +1,8 @@
 package com.gustavosdaniel.ecommerce_api.user;
 
+import com.gustavosdaniel.ecommerce_api.address.Address;
+import com.gustavosdaniel.ecommerce_api.address.AddressMapper;
+import com.gustavosdaniel.ecommerce_api.address.AddressRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,10 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,6 +34,9 @@ class UserServiceImplTest {
 
     @Mock
     private UserMapper userMapper;
+
+    @Mock
+    private AddressMapper addressMapper;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -323,6 +326,82 @@ class UserServiceImplTest {
             UserCpfResponse output = userService.addCpfToUser(uuid,userAddCpf );
 
             assertNotNull(output);
+
+        }
+    }
+
+    @Nested
+    class UpdateUser {
+
+        @Test
+        @DisplayName("Should update user")
+        void shouldUpdateUser() {
+
+            UUID uuid = UUID.randomUUID();
+            String email = "gustavosdaniel@hotmail.com";
+            String password = "senha123";
+
+            User user = new User("Gustavo", password, email);
+            user.setUserRole(UserRole.CUSTOMER);
+            user.setPhoneNumber("11987654321");
+            user.setAddresses(new ArrayList<>());
+            ReflectionTestUtils.setField(user, "id", uuid);
+
+            AddressRequest addressRequest = new AddressRequest(
+                    uuid,
+                    "1122",
+                    "Rua Teste",
+                    "123",
+                    "Apto 45",
+                    "Centro",
+                    "São Paulo",
+                    "SP",
+                    "01234567"
+            );
+
+            UserUpdateRequest request = new UserUpdateRequest(
+                    "GustavoUpdated",
+                    "newPassword123",
+                    "newemail@hotmail.com",
+                    UserRole.ADMIN,
+                    "11999999999",
+                    addressRequest
+            );
+
+            when(userRepository.findById(uuid)).thenReturn(Optional.of(user));
+            when(userRepository.existsByEmail("newemail@hotmail.com")).thenReturn(false);
+            when(userRepository.save(any(User.class))).thenReturn(user);
+
+            Address newAddress = new Address();
+
+            when(addressMapper.toAddress(addressRequest)).thenReturn(newAddress);
+
+            UserUpdateResponse expectedResponse = new UserUpdateResponse(
+                    uuid,
+                    "GustavoUpdated",
+                    "newemail@hotmail.com",
+                    UserRole.ADMIN,
+                    "11999999999",
+                    List.of()
+            );
+            when(userMapper.toUserUpdate(user)).thenReturn(expectedResponse);
+
+
+            UserUpdateResponse output = userService.updateUser(uuid, request);
+
+            assertNotNull(output);
+            assertEquals("GustavoUpdated", output.userName());
+            assertEquals("newemail@hotmail.com", output.email());
+            assertEquals(UserRole.ADMIN, output.role());
+            assertEquals("11999999999", output.phoneNumber());
+
+            verify(userRepository).findById(uuid);
+            verify(userRepository).existsByEmail("newemail@hotmail.com");
+            verify(userMapper).updateUser(request, user);
+            verify(addressMapper).toAddress(addressRequest);
+            verify(userRepository).save(user);
+            verify(userMapper).toUserUpdate(user);
+
 
         }
     }

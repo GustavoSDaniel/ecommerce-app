@@ -1,0 +1,25 @@
+### PUT atualizando informçoes do usuário
+
+PUT http://localhost:5050/api/v1/users/userUpdate/{ID DO USUARIO PARA ATUALIZAR}
+Authorization: Bearer <SEU_TOKEN_AQUI>
+Content-Type: application/json
+
+{
+  "userName": "novoNomeDeUsuario123",
+  "password": "senhaForteMin8Digitos",
+  "email": "novo.email@exemplo.com",
+  "role": "ADMIN",
+  "phoneNumber": "11987654321",
+
+  "address": {
+    "userId": "26d285a4-98f0-4cde-9e99-1c138f950910",
+    "houseNumber": "1500A",
+    "complement": "Apto 502",
+    "zipCode": "01001000",
+    "street": "Rua Exemplo de Endereço",
+    "bairro": "Centro",
+    "city": "São Paulo",
+    "state": "SP",
+    "country": "Brasil"
+  }
+}

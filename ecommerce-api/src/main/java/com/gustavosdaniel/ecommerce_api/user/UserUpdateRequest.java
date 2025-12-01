@@ -1,5 +1,7 @@
 package com.gustavosdaniel.ecommerce_api.user;
 
+import com.gustavosdaniel.ecommerce_api.address.AddressRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -11,6 +13,7 @@ public record UserUpdateRequest(
                 message = "O nome de usuário deve conter apenas letras e números")
         String userName,
 
+        @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres")
         String password,
 
         @Email(message = "Formato do emaill é obrigatório")
@@ -20,7 +23,10 @@ public record UserUpdateRequest(
         UserRole role,
 
         @Pattern(regexp = "\\d{10,11}", message = "O telefone deve conter DDD + Número (apenas dígitos)")
-        String phoneNumber
+        String phoneNumber,
+
+        @Valid
+        AddressRequest address
 
 ){
 }

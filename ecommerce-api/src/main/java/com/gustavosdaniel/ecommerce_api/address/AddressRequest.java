@@ -19,7 +19,7 @@ public record AddressRequest(
         @Size(max = 100, message = "O complemento deve ter no máximo 100 caracteres")
         String complement,
 
-        @NotBlank(message = "O CPF é obrigatório")
+        @NotBlank(message = "O CEP é obrigatório")
         @Pattern(regexp = "^\\d{5}-\\d{3}$|^\\d{8}$",
                 message = "O CEP deve estar no formato 99999-999 ou 99999999.")
         String zipCode,
