@@ -59,6 +59,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public CategoryResponse getCategoryById(Integer id) {
+
+        log.info("Buscando categoria {}", id);
+
+        Category category = categoryRepository.findById(id).orElseThrow(CategoryNotFoundException::new);
+
+        log.info("Categoria encontrada com sucesso {}", category.getName());
+
+        return categoryMapper.toCategoryResponse(category);
+
+    }
+
+    @Override
     @Transactional
     public CategoryUpdateResponse updateCategory(Integer id, CategoryUpdateRequest request) {
 

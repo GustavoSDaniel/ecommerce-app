@@ -49,6 +49,15 @@ public class CategoryController {
 
     }
 
+    @GetMapping("/buscaPorId/{id}")
+    @Operation(summary = "Busca categoria pelo ID")
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Integer id) {
+
+        CategoryResponse category = categoryService.getCategoryById(id);
+
+        return ResponseEntity.ok(category);
+    }
+
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza categoria")
     public ResponseEntity<CategoryUpdateResponse> updateCategory(

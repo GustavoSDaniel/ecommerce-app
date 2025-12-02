@@ -216,4 +216,36 @@ class CategoryServiceImplTest {
         }
     }
 
+    @Nested
+    @DisplayName("Should category by ID with sucesso")
+    class GetCategoryById {
+
+        @Test
+        void getCategoryById() {
+
+            Integer id = 1;
+
+            Category category = new Category(
+                    "Eletricos", "Produtos eletricos de qualidade superior");
+            ReflectionTestUtils.setField(category, "id", id);
+
+            CategoryResponse response = new CategoryResponse(
+                    id,"Eletricos",
+                    "Produtos roupas de qualidade superior", "Gustavo");
+
+            when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
+            when(categoryMapper.toCategoryResponse(category)).thenReturn(response);
+
+            CategoryResponse output = categoryService.getCategoryById(id);
+
+            assertNotNull(output);
+            assertEquals(response, output);
+
+            verify(categoryRepository).findById(id);
+            verify(categoryMapper).toCategoryResponse(category);
+
+
+        }
+    }
+
 }
