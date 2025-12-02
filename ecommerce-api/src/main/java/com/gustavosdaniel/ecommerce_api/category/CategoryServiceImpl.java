@@ -59,6 +59,31 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
+    public CategoryUpdateResponse updateCategory(Integer id, CategoryUpdateRequest request) {
+
+        Category category = categoryRepository.findById(id).orElseThrow(CategoryNotFoundException::new);
+
+
+        if (request.name() != null && !request.name().isBlank()){
+
+            if (!category.getName().equalsIgnoreCase(request.name()) &&
+                    categoryRepository.existsByNameIgnoreCase(request.name())){
+                log.info("Tentativa de atualizar categoria com nome já existente: {}", request.name());
+                throw new NameCategoryExistException();
+            }
+        }
+
+        categoryMapper.toUpdateCategory(request,category);
+
+        Category savedCategory = categoryRepository.save(category);
+
+        log.info("Categoria atualizada com sucesso: {}", savedCategory.getName());
+
+        return categoryMapper.toUpdateCategoryResponse(savedCategory);
+    }
+
+    @Override
     public void deleteCategory(Integer id) {
 
         log.info("delete Category");

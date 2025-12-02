@@ -176,4 +176,44 @@ class CategoryServiceImplTest {
         }
     }
 
+    @Nested
+    @DisplayName("Should update category with sucesso")
+    class UpdateCategory {
+
+
+        @Test
+        void updateCategory() {
+
+            Integer id = 1;
+            String name = "Eletricos";
+            String description = "Produtos eletricos de qualidade superior";
+
+            String nomeUpdate = "EletricosAtualizado";
+            String descriptionUpdate = "Produtos roupas de qualidade superior ATUALIZADO";
+            String lastModifiedBy = "Atualizado By Gustavo";
+
+            Category category = new Category(name, description);
+            ReflectionTestUtils.setField(category, "id", id);
+
+            CategoryUpdateRequest request = new CategoryUpdateRequest(nomeUpdate, descriptionUpdate);
+
+            CategoryUpdateResponse response = new CategoryUpdateResponse(
+                    id,nomeUpdate, descriptionUpdate, lastModifiedBy);
+
+            when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
+            when(categoryRepository.save(any(Category.class))).thenReturn(category);
+            when(categoryMapper.toUpdateCategoryResponse(category)).thenReturn(response);
+
+            CategoryUpdateResponse output = categoryService.updateCategory(id, request);
+
+            assertNotNull(output);
+            assertEquals(response, output);
+
+            verify(categoryRepository).findById(id);
+            verify(categoryRepository).save(any(Category.class));
+            verify(categoryMapper).toUpdateCategoryResponse(category);
+
+        }
+    }
+
 }

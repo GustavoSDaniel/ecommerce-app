@@ -348,7 +348,7 @@ class UserServiceImplTest {
             ReflectionTestUtils.setField(user, "id", uuid);
 
             AddressRequest addressRequest = new AddressRequest(
-                    uuid,
+
                     "1122",
                     "Rua Teste",
                     "123",

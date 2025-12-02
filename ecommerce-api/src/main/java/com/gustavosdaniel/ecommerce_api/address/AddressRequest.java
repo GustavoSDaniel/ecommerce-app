@@ -1,16 +1,11 @@
 package com.gustavosdaniel.ecommerce_api.address;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-import java.util.UUID;
 
 public record AddressRequest(
-
-        @NotNull(message = "O ID do usuário é obrigatório")
-        UUID userId,
 
         @NotBlank(message = "O número da casa é obrigatório")
         @Size(max = 10, message = "O número da casa deve ter no máximo 10 caracteres")

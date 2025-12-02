@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class AddressServiceImpl implements AddressService {
 
@@ -24,11 +26,11 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @Transactional
-    public AddressResponse createAddress(AddressRequest address) {
+    public AddressResponse createAddress(UUID userId, AddressRequest address) {
 
-        log.info("Creating address para user : {}", address.userId());
+        log.info("Creating address para user ");
 
-        User user = userRepository.findById(address.userId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         Address newAddress = addressMapper.toAddress(address);
         newAddress.setUser(user);

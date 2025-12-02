@@ -9,5 +9,7 @@ public interface CategoryService {
 
     Page<CategoryResponse> getCategories(Pageable pageable);
 
+    CategoryUpdateResponse updateCategory(Integer id, CategoryUpdateRequest request);
+
     void deleteCategory(Integer id);
 }

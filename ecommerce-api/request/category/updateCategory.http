@@ -1,0 +1,11 @@
+### PUT atualizando category
+
+PUT http://localhost:5050/api/v1/categories/{ID DA CATEGORIA QUE VAI SER ATUALIZADAATUALIZADA}
+Authorization: Bearer <SEU_TOKEN_AQUI>
+Content-Type: application/json
+
+{
+  "name": "Categoria atualizada com sucesso",
+  "description": "Descrição da categooria atualizada"
+}
+

@@ -24,4 +24,29 @@ public class CategoryMapper {
                 category.getCreatedBy()
         );
     }
+
+    public void toUpdateCategory(CategoryUpdateRequest request, Category category) {
+
+        if (request != null && !request.name().isBlank()) {
+
+            category.setName(request.name());
+        }
+
+        if (request != null && !request.description().isBlank()) {
+
+            category.setDescription(request.description());
+        }
+
+    }
+
+    public CategoryUpdateResponse toUpdateCategoryResponse(Category category) {
+        if(category == null) return null;
+
+        return new CategoryUpdateResponse(
+                category.getId(),
+                category.getName(),
+                category.getDescription(),
+                category.getLastModifiedBy()
+        );
+    }
 }

@@ -68,7 +68,7 @@ class AddressServiceImplTest {
             address.setUser(user);
 
             AddressRequest addressRequest = new AddressRequest(
-                    userId, houseNumber, complement, zipCode, street, bairro, cidade, estado, pais);
+                     houseNumber, complement, zipCode, street, bairro, cidade, estado, pais);
 
             AddressResponse addressResponse = new AddressResponse(
                     addressId, "Gustavo", houseNumber, complement,
@@ -79,7 +79,7 @@ class AddressServiceImplTest {
             when(addressRepository.save(any(Address.class))).thenReturn(address);
             when(addressMapper.toAddressResponse(address)).thenReturn(addressResponse);
 
-            AddressResponse output = addressService.createAddress(addressRequest);
+            AddressResponse output = addressService.createAddress(userId,addressRequest);
 
             assertNotNull(output);
             assertEquals(addressResponse, output);
