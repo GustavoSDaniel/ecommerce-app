@@ -37,4 +37,17 @@ public class CategoryServiceImpl implements CategoryService {
 
         return categoryMapper.toCategoryResponse(savedCategory);
     }
+
+    @Override
+    public void deleteCategory(Integer id) {
+
+        log.info("delete Category");
+
+        Category category = categoryRepository.findById(id).orElseThrow(CategoryNotFoundException::new);
+
+        log.info("delete Category {} com sucesso", category.getName());
+
+        categoryRepository.delete(category);
+
+    }
 }

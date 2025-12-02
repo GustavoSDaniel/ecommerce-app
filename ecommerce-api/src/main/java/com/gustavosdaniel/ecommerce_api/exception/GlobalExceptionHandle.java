@@ -1,5 +1,6 @@
 package com.gustavosdaniel.ecommerce_api.exception;
 
+import com.gustavosdaniel.ecommerce_api.category.CategoryNotFoundException;
 import com.gustavosdaniel.ecommerce_api.category.NameCategoryExistException;
 import com.gustavosdaniel.ecommerce_api.user.*;
 import org.slf4j.Logger;
@@ -117,5 +118,18 @@ public class GlobalExceptionHandle {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(CategoryNotFoundException ex){
+
+        log.info("Categoria não encontrada {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("Categoria não encontrada",
+                "Categoria com o ID informada não foi encontrada",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 }

@@ -48,6 +48,7 @@ public class SecurityConfig {
                                 .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                                 .requestMatchers(PUBLIC_URLS).permitAll()
 
+                                //User
                                 .requestMatchers(HttpMethod.GET, "/api/v1/users/**")
                                 .hasAnyRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/api/v1/users/userUpdate/**")
@@ -57,7 +58,10 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "api/v1/users/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
 
+                                //Category
                                 .requestMatchers(HttpMethod.POST, "api/v1/categories/**")
+                                .hasAnyRole("ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "api/v1/categories/**")
                                 .hasAnyRole("ADMIN")
 
                                 //TODO os outros endpoiunts

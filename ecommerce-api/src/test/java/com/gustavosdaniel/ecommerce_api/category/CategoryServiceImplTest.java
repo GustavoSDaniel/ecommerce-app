@@ -79,4 +79,43 @@ class CategoryServiceImplTest {
         }
     }
 
+    @Nested
+    @DisplayName("Should delete a category with success")
+    class DeleteCategory {
+
+        @Test
+        void deleteCategory() {
+
+            Integer id = 1;
+            String name = "Eletricos";
+            String description = "Produtos eletricos de qualidade superior";
+
+            Category category = new Category(name, description);
+            ReflectionTestUtils.setField(category, "id", id);
+
+            when(categoryRepository.findById(id)).thenReturn(Optional.of(category));
+
+            categoryService.deleteCategory(id);
+
+            verify(categoryRepository).findById(id);
+            verify(categoryRepository).delete(category);
+        }
+
+        @Test
+        void exceptionDeleteCategory() {
+
+            Integer id = 1;
+            String name = "Eletricos";
+            String description = "Produtos eletricos de qualidade superior";
+
+            Category category = new Category(name, description);
+            ReflectionTestUtils.setField(category, "id", id);
+
+            when(categoryRepository.findById(id)).thenReturn(Optional.empty());
+
+            assertThrows(CategoryNotFoundException.class, () -> categoryService.deleteCategory(id));
+
+        }
+    }
+
 }

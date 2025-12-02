@@ -3,10 +3,7 @@ package com.gustavosdaniel.ecommerce_api.category;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -32,5 +29,15 @@ public class CategoryController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").build().toUri();
 
         return ResponseEntity.created(location).body(category);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Deleta categoria")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
+
+        categoryService.deleteCategory(id);
+
+        return ResponseEntity.noContent().build();
+
     }
 }
