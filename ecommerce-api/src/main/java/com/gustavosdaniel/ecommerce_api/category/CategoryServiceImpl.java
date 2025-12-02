@@ -7,6 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
@@ -68,6 +71,24 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("Categoria encontrada com sucesso {}", category.getName());
 
         return categoryMapper.toCategoryResponse(category);
+
+    }
+
+    @Override
+    public List<CategoryResponse> searchCategories(String name) {
+
+        List<Category> categories = categoryRepository.findByNameContainingIgnoreCase(name);
+
+        if (categories.isEmpty()){
+
+            log.info("Nenhuma categoria com esse nome {} encontrada", name);
+
+            return List.of();
+        }
+
+        log.info("Categorias encontradas com sucesso {}", categories.size());
+
+        return categories.stream().map(categoryMapper::toCategoryResponse).collect(Collectors.toList());
 
     }
 

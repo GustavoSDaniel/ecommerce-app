@@ -248,4 +248,55 @@ class CategoryServiceImplTest {
         }
     }
 
+    @Nested
+    @DisplayName("Should categories by name sucesso")
+    class GetCategoriesByName {
+
+
+        @Test
+        void getCategoriesByName() {
+
+            String searchName = "Elet";
+            Integer id = 1;
+            Integer id2 = 2;
+            Integer id3 = 3;
+
+            Category category = new Category(
+                    "Eletricos", "Produtos eletricos de qualidade superior");
+            ReflectionTestUtils.setField(category, "id", id);
+
+            Category category1 = new Category(
+                    "Roupas", "Produtos roupas de qualidade superior");
+            ReflectionTestUtils.setField(category1, "id", id2);
+
+            Category category2 = new Category("Casa", "Produtos casa superior");
+            ReflectionTestUtils.setField(category2, "id", id3);
+
+            List<Category> categoriesFoundEncontradas = List.of(category);
+
+            CategoryResponse response = new CategoryResponse(
+                    id,"Eletricos",
+                    "Produtos roupas de qualidade superior", "Gustavo");
+
+            CategoryResponse response2 = new CategoryResponse(
+                    id2,"Roupas", "Produtos casa superior", "Gustavo");
+
+            CategoryResponse response3 = new CategoryResponse(
+                    id3,"Casa", "Produtos casa superior", "Gustavo");
+
+
+            when(categoryRepository.findByNameContainingIgnoreCase(anyString())).thenReturn(categoriesFoundEncontradas);
+            when(categoryMapper.toCategoryResponse(category)).thenReturn(response);
+
+            List<CategoryResponse> output = categoryService.searchCategories(searchName);
+
+            assertNotNull(output);
+
+            verify(categoryRepository).findByNameContainingIgnoreCase(eq(searchName));
+            verify(categoryMapper, times(1)).toCategoryResponse(any(Category.class));
+
+
+        }
+    }
+
 }

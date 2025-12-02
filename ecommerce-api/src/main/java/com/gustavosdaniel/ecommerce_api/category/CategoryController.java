@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/categories")
@@ -58,6 +59,15 @@ public class CategoryController {
         return ResponseEntity.ok(category);
     }
 
+    @GetMapping("/searchCategories")
+    @Operation(summary = "Busca categoria pelo nome")
+    public ResponseEntity<List<CategoryResponse>> getCategoryByName(@RequestParam String name) {
+
+        List<CategoryResponse> categories = categoryService.searchCategories(name);
+
+        return ResponseEntity.ok(categories);
+    }
+
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza categoria")
     public ResponseEntity<CategoryUpdateResponse> updateCategory(
@@ -68,6 +78,7 @@ public class CategoryController {
 
         return ResponseEntity.ok(category);
     }
+
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Deleta categoria")

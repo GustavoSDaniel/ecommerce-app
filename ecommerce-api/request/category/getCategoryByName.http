@@ -1,0 +1,5 @@
+### GET busca a categoria pelo nome
+
+GET  http://localhost:5050/api/v1/categories/searchCategories?name=(NOME DA CATEGORIA)
+Authorization: Bearer <SEU_TOKEN_AQUI>
+
