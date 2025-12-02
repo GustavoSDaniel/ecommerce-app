@@ -29,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         log.info("create Category");
 
-        if (categoryRepository.existsByName(request.name())){
+        if (categoryRepository.existsByNameIgnoreCase(request.name())){
 
             throw new NameCategoryExistException();
         }

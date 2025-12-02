@@ -1,5 +1,14 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=IntelliJ IDEA
+### POST criar produto
 
-###
+POST http://localhost:5050/api/v1/products/categories/{ID DA CATEGORIA}
+Authorization: Bearer <SEU_TOKEN_AQUI>
+Content-Type: application/json
+
+{
+  "name": "Smartphone Galaxy S23",
+  "description": "Smartphone 256GB, Tela AMOLED, Preto",
+  "measureUnit": "UNIDADE",
+  "availableQuantity": 50,
+  "price": 4500.00
+}
+

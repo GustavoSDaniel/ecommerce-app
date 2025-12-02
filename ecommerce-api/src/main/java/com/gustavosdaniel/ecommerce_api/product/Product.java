@@ -22,6 +22,14 @@ public class Product extends AuditableBase {
 
     public Product() {}
 
+    public Product(String name, String description, MeasureUnit measureUnit, BigDecimal availableQuantity, BigDecimal price) {
+        this.name = name;
+        this.description = description;
+        this.measureUnit = measureUnit;
+        this.availableQuantity = availableQuantity;
+        this.price = price;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,8 +40,12 @@ public class Product extends AuditableBase {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    private Integer availableQuantity;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "measure_unit" ,nullable = false)
+    private MeasureUnit measureUnit;
+
+    @Column(nullable = false, precision = 19, scale = 3)
+    private BigDecimal availableQuantity;
 
     @Column(nullable = false)
     private BigDecimal price;
@@ -67,11 +79,19 @@ public class Product extends AuditableBase {
         this.description = description;
     }
 
-    public Integer getAvailableQuantity() {
+    public MeasureUnit getMeasureUnit() {
+        return measureUnit;
+    }
+
+    public void setMeasureUnit(MeasureUnit measureUnit) {
+        this.measureUnit = measureUnit;
+    }
+
+    public BigDecimal getAvailableQuantity() {
         return availableQuantity;
     }
 
-    public void setAvailableQuantity(Integer availableQuantity) {
+    public void setAvailableQuantity(BigDecimal availableQuantity) {
         this.availableQuantity = availableQuantity;
     }
 

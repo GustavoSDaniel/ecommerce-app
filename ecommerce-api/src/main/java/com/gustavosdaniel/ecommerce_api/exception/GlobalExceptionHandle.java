@@ -2,6 +2,8 @@ package com.gustavosdaniel.ecommerce_api.exception;
 
 import com.gustavosdaniel.ecommerce_api.category.CategoryNotFoundException;
 import com.gustavosdaniel.ecommerce_api.category.NameCategoryExistException;
+import com.gustavosdaniel.ecommerce_api.product.ProductNameExistsException;
+import com.gustavosdaniel.ecommerce_api.product.ProductNotFoundException;
 import com.gustavosdaniel.ecommerce_api.user.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,6 +129,35 @@ public class GlobalExceptionHandle {
 
         ErrorResponse error = new ErrorResponse("Categoria não encontrada",
                 "Categoria com o ID informada não foi encontrada",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductNotFoundException(ProductNotFoundException ex){
+
+        log.info("Produto não encontrado {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse(
+                "Produto não encontrado",
+                "O produto inserido não existe",
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(ProductNameExistsException.class)
+    public ResponseEntity<ErrorResponse> handleProductNameExistsException(ProductNameExistsException ex){
+
+        log.info("Produto com nome já em uso {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse(
+                "Nome do produto já em uso",
+                "O nome informado já está em uso em outro produto",
                 LocalDateTime.now(),
                 null);
 
