@@ -1,8 +1,11 @@
 package com.gustavosdaniel.ecommerce_api.category;
 
 import com.gustavosdaniel.ecommerce_api.product.Product;
+import com.gustavosdaniel.ecommerce_api.util.AuditableBase;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -13,9 +16,14 @@ import java.util.Objects;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Category {
+public class Category extends AuditableBase {
 
     public Category() {}
+
+    public Category(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,18 +41,9 @@ public class Category {
             orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", insertable = false)
-    private LocalDateTime updatedAt;
-
     public Integer getId() {
         return id;
     }
-
 
     public String getName() {
         return name;
@@ -60,18 +59,6 @@ public class Category {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public List<Product> getProducts() {

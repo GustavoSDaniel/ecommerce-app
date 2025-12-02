@@ -2,8 +2,11 @@ package com.gustavosdaniel.ecommerce_api.product;
 
 import com.gustavosdaniel.ecommerce_api.category.Category;
 import com.gustavosdaniel.ecommerce_api.orderItem.OrderItem;
+import com.gustavosdaniel.ecommerce_api.util.AuditableBase;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -15,7 +18,7 @@ import java.util.Objects;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Product {
+public class Product extends AuditableBase {
 
     public Product() {}
 
@@ -43,14 +46,6 @@ public class Product {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();
-
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", insertable = false)
-    private LocalDateTime updatedAt;
 
     public Long getId() {
         return id;
@@ -102,18 +97,6 @@ public class Product {
 
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override

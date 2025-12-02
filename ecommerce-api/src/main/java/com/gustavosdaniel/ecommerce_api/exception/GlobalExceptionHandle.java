@@ -1,5 +1,6 @@
 package com.gustavosdaniel.ecommerce_api.exception;
 
+import com.gustavosdaniel.ecommerce_api.category.NameCategoryExistException;
 import com.gustavosdaniel.ecommerce_api.user.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,5 +103,19 @@ public class GlobalExceptionHandle {
                 null);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(NameCategoryExistException.class)
+    public ResponseEntity<ErrorResponse> handleNameCategoryExistException(NameCategoryExistException ex) {
+
+        log.warn("Name category existente {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("Nome Já em uso",
+                "Já existe uma outra categoria com esse nome em uso",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+
     }
 }

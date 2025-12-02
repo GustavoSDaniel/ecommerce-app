@@ -1,0 +1,10 @@
+### POST criar categoria
+
+POST http://localhost:5050/api/v1/categories/category
+Authorization: Bearer <SEU_TOKEN_AQUI>
+Content-Type: application/json
+
+{
+  "name": "Informatica",
+  "description": "Computadores, telefones etc..."
+}

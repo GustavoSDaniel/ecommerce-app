@@ -57,6 +57,9 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "api/v1/users/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
 
+                                .requestMatchers(HttpMethod.POST, "api/v1/categories/**")
+                                .hasAnyRole("ADMIN")
+
                                 //TODO os outros endpoiunts
 
                                 .anyRequest().authenticated())
