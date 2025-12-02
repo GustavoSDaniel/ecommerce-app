@@ -1,0 +1,4 @@
+### GET mostra todas as categorias
+
+GET http://localhost:5050/api/v1/categories
+Authorization: Bearer <SEU_TOKEN_AQUI>
