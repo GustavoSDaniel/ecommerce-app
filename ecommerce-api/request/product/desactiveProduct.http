@@ -1,0 +1,5 @@
+### PATCH Desativa produto
+
+PATCH http://localhost:5050/api/v1/products/{ID_DO_PRODUTO}/desative
+Authorization: Bearer <SEU_TOKEN_AQUI>
+Content-Type: application/json

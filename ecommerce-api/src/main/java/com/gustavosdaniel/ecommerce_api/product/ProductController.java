@@ -36,11 +36,30 @@ public class ProductController {
 
     }
 
-    @DeleteMapping("/{productId}")
-    @Operation(summary = "Deleta produto através do ID")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
+    @PatchMapping("{id}/activate")
+    @Operation(summary = "Ativa produto")
+    public ResponseEntity<Void> ativarProduct(@PathVariable Long id){
 
-        productService.deleteProduct(productId);
+        productService.reactivateProduct(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/desative")
+    @Operation(summary = "Desativa produto")
+    public ResponseEntity<Void> desativarProduto(@PathVariable Long id) {
+
+        productService.desativeProduct(id);
+
+        return ResponseEntity.noContent().build();
+
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Deleta produto através do ID")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+
+        productService.deleteProduct(id);
 
         return ResponseEntity.noContent().build();
     }

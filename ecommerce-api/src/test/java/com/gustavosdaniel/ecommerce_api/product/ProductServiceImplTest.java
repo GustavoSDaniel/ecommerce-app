@@ -119,6 +119,72 @@ class ProductServiceImplTest {
     }
 
     @Nested
+    @DisplayName("Should ative product with sucesso")
+    class ActivateProduct {
+
+        @Test
+        void activateProduct() {
+
+            Long productId = 1L;
+            String name = "TV";
+            String description = "TV descricao";
+            MeasureUnit measureUnit = MeasureUnit.UNIDADE;
+            BigDecimal availableQuantity = BigDecimal.valueOf(5);
+            BigDecimal price = BigDecimal.valueOf(10);
+
+            Product product = new Product(
+                    name, description, measureUnit, availableQuantity, price);
+            ReflectionTestUtils.setField(product, "id", productId);
+
+            product.setActive(false);
+
+            when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+
+            when(productRepository.save(any(Product.class))).thenReturn(product);
+
+            productService.reactivateProduct(productId);
+
+            verify(productRepository).save(product);
+
+            assertTrue(product.getActive());
+
+        }
+    }
+
+    @Nested
+    @DisplayName("Should desative product with sucesso")
+    class DesativeProduct {
+
+        @Test
+        void desativeProduct() {
+
+            Long productId = 1L;
+            String name = "TV";
+            String description = "TV descricao";
+            MeasureUnit measureUnit = MeasureUnit.UNIDADE;
+            BigDecimal availableQuantity = BigDecimal.valueOf(5);
+            BigDecimal price = BigDecimal.valueOf(10);
+
+            Product product = new Product(
+                    name, description, measureUnit, availableQuantity, price);
+            ReflectionTestUtils.setField(product, "id", productId);
+
+            product.setActive(true);
+
+            when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+
+            when(productRepository.save(any(Product.class))).thenReturn(product);
+
+            productService.desativeProduct(productId);
+
+            verify(productRepository).save(product);
+
+            assertFalse(product.getActive());
+
+        }
+    }
+
+    @Nested
     @DisplayName("Should delete product with sucesso")
     class DeleteProduct {
 

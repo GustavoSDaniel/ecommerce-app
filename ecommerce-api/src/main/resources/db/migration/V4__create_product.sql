@@ -7,6 +7,8 @@ CREATE TABLE product (
     measure_unit VARCHAR(255) NOT NULL,
     available_quantity NUMERIC(19, 3) NOT NULL,
     price NUMERIC(38, 2) NOT NULL,
+    active BOOLEAN DEFAULT TRUE NOT NULL,
+
 
     created_by VARCHAR(255) NOT NULL,
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,

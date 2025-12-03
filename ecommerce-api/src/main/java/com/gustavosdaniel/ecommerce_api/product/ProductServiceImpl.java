@@ -14,7 +14,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-    private final static Logger log = LoggerFactory.getLogger(ProductServiceImpl.class);
+    private static final  Logger log = LoggerFactory.getLogger(ProductServiceImpl.class);
 
     public ProductServiceImpl(ProductMapper productMapper, ProductRepository productRepository, CategoryRepository categoryRepository) {
         this.productMapper = productMapper;
@@ -50,6 +50,53 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
+    public void reactivateProduct(Long productId) {
+
+        log.info("Reativando produto {}", productId);
+
+        Product product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
+
+        if (Boolean.TRUE.equals(product.getActive())){
+
+            log.info("Produto {} já esta ativado ", product.getName());
+
+            return;
+        }
+
+        product.setActive(true);
+
+        productRepository.save(product);
+
+        log.info("Produto {} Ativado com sucesso ", product.getName());
+
+    }
+
+    @Override
+    @Transactional
+    public void desativeProduct(Long productId) {
+
+        log.info("Desativando produto {}", productId);
+
+        Product product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
+
+        if (Boolean.FALSE.equals(product.getActive())){
+
+            log.info("Produto {} já esta desativado ", product.getName());
+
+            return;
+        }
+
+        product.setActive(false);
+
+        productRepository.save(product);
+
+        log.info("Produto {} Desativado com sucesso ", product.getName());
+
+    }
+
+    @Override
+    @Transactional
     public void deleteProduct(Long id) {
 
         log.info("Deletando produto {}", id);
