@@ -48,4 +48,24 @@ public class ProductServiceImpl implements ProductService {
 
         return productMapper.toProductResponse(savedProduct);
     }
+
+    @Override
+    public void deleteProduct(Long id) {
+
+        log.info("Deletando produto {}", id);
+
+        Product product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
+
+        if (!product.getOrderItems().isEmpty()) {
+
+            log.info("Náo foi possivel excluir produto {}", product.getName());
+
+            throw new ProductAssociateWithOrdersException();
+        }
+
+        log.info("Produto {} Deletado com sucesso ", product.getName());
+
+        productRepository.delete(product);
+
+    }
 }

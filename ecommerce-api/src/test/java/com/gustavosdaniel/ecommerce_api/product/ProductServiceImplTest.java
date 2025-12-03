@@ -2,6 +2,7 @@ package com.gustavosdaniel.ecommerce_api.product;
 
 import com.gustavosdaniel.ecommerce_api.category.Category;
 import com.gustavosdaniel.ecommerce_api.category.CategoryRepository;
+import com.gustavosdaniel.ecommerce_api.orderItem.OrderItem;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -115,6 +116,42 @@ class ProductServiceImplTest {
                     () -> {productService.createProduct(id, request);});
 
         }
+    }
+
+    @Nested
+    @DisplayName("Should delete product with sucesso")
+    class DeleteProduct {
+
+        @Test
+        void deleteProduct() {
+
+            Long productId = 1L;
+            String name = "TV";
+            String description = "TV descricao";
+            MeasureUnit measureUnit = MeasureUnit.UNIDADE;
+            BigDecimal availableQuantity = BigDecimal.valueOf(5);
+            BigDecimal price = BigDecimal.valueOf(10);
+
+            Product product = new Product(
+                    name, description, measureUnit, availableQuantity, price);
+            ReflectionTestUtils.setField(product, "id", productId);
+
+            when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+
+            productService.deleteProduct(productId);
+
+        }
+
+        @Test
+        void deleteProduct_notFound() {
+
+            Long productId = 1L;
+
+            when(productRepository.findById(productId)).thenReturn(Optional.empty());
+
+            assertThrows(ProductNotFoundException.class, () -> {productService.deleteProduct(productId);});
+        }
+
     }
 
 }

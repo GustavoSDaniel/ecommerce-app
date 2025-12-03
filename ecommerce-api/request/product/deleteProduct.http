@@ -1,0 +1,5 @@
+### DELETE deleta o produto pelo ID
+
+DELETE http://localhost:5050/api/v1/products/{ID DO PRODUTO A SER DELETADO}
+Authorization: Bearer <SEU_TOKEN_AQUI>
+

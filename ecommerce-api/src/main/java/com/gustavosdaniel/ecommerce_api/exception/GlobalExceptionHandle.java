@@ -2,6 +2,7 @@ package com.gustavosdaniel.ecommerce_api.exception;
 
 import com.gustavosdaniel.ecommerce_api.category.CategoryNotFoundException;
 import com.gustavosdaniel.ecommerce_api.category.NameCategoryExistException;
+import com.gustavosdaniel.ecommerce_api.product.ProductAssociateWithOrdersException;
 import com.gustavosdaniel.ecommerce_api.product.ProductNameExistsException;
 import com.gustavosdaniel.ecommerce_api.product.ProductNotFoundException;
 import com.gustavosdaniel.ecommerce_api.user.*;
@@ -160,6 +161,21 @@ public class GlobalExceptionHandle {
                 "O nome informado já está em uso em outro produto",
                 LocalDateTime.now(),
                 null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(ProductAssociateWithOrdersException.class)
+    public ResponseEntity<ErrorResponse> handleProductAssociateWithOrdersException(ProductAssociateWithOrdersException ex){
+
+        log.info("Erro ao deletar produto pois existe pedidos desse produto {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse(
+                "Produto com pedido",
+                "O produto que está sendo deletado possui pedido em andamento",
+                LocalDateTime.now(),
+                null
+        );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
