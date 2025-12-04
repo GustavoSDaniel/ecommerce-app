@@ -6,6 +6,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +63,19 @@ public class ProductController {
             Pageable pageable){
 
         Page<ProductResponse> products = productService.getAllActiveProducts(pageable);
+
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/searchProductName")
+    @Operation(summary = "Busca podrutos pelo nome")
+    public ResponseEntity<Page<ProductResponse>>searchProductName(
+            @RequestParam String name,
+            @ParameterObject
+            @PageableDefault(sort = "name", direction = Sort.Direction.ASC)
+            Pageable pageable){
+
+        Page<ProductResponse> products = productService.searchProductByName(name, pageable);
 
         return ResponseEntity.ok(products);
     }

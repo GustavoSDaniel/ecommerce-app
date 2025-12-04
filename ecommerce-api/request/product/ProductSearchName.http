@@ -1,0 +1,4 @@
+### GET busca produto pelo nome
+
+GET  http://localhost:5050/api/v1/products/searchProductName
+Authorization: Bearer <SEU_TOKEN_AQUI>

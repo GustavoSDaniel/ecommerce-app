@@ -100,6 +100,31 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Page<ProductResponse> searchProductByName(String name, Pageable pageable) {
+
+        log.info("Buscando produtos pelo nome {}", name);
+
+        if (name == null || name.isBlank()){
+
+            log.warn("Tentativa de busca com nome vazio");
+
+            return Page.empty();
+        }
+
+        Page<Product> products = productRepository.findByNameContainingIgnoreCase(name, pageable);
+
+        if (products.isEmpty()){
+
+            log.info("Nenhum produto com esse nome foi encontrado: {}", name);
+        }
+
+        log.info("Produto encontrado com sucesso {}", products.getTotalElements());
+
+        return products.map(productMapper::toProductResponse);
+    }
+
+    @Override
     public ProductResponse getProductById(Long productId) {
 
         log.info("Buscando produto através do ID {}", productId);

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,6 +77,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryResponse> searchCategories(String name) {
+
+        if (name == null || name.isBlank()){
+            log.warn("Tentativa de busca com nome vazio");
+
+            return List.of();
+        }
+
+        log.info("Buscando categorias {}", name);
 
         List<Category> categories = categoryRepository.findByNameContainingIgnoreCase(name);
 

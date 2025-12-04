@@ -13,6 +13,8 @@ public interface ProductService {
 
     Page<ProductResponse> getAllProductsByCategoryId(Integer categoryId, Pageable pageable);
 
+    Page<ProductResponse> searchProductByName(String name, Pageable pageable);
+
     ProductResponse getProductById(Long productId);
 
     void reactivateProduct(Long productId);

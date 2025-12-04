@@ -312,6 +312,53 @@ class ProductServiceImplTest {
     }
 
     @Nested
+    @DisplayName("Should product search name with sucesso")
+    class GetProductsByNameSearch {
+
+        @Test
+        void getProductsByNameSearch() {
+
+            Pageable pageable = PageRequest.of(0, 10);
+
+            Long productId = 1L;
+
+            Integer id = 1;
+            String categoryName = "Eletricos";
+            String description = "Produtos eletricos de qualidade superior";
+
+            Category category = new Category(categoryName, description);
+            ReflectionTestUtils.setField(category, "id", id);
+
+            Product product = new Product("Maquita", "Maquita eletrica", MeasureUnit.UNIDADE,
+                    BigDecimal.valueOf(5), BigDecimal.valueOf(40.00));
+            ReflectionTestUtils.setField(product, "id", productId);
+
+            List<Product> products = Arrays.asList(product);
+
+            Page<Product> productPage = new PageImpl<>(products, pageable, products.size());
+
+            ProductResponse response = new ProductResponse(
+                    categoryName, productId, "Maquita", "Maquita eletrica", MeasureUnit.UNIDADE,
+                    BigDecimal.valueOf(5),BigDecimal.valueOf(40), "GUSTAVO");
+
+            when(productRepository.findByNameContainingIgnoreCase("Maquita", pageable))
+                    .thenReturn(productPage);
+
+            when(productMapper.toProductResponse(product)).thenReturn(response);
+
+            Page<ProductResponse> output = productService.searchProductByName("Maquita", pageable);
+
+            assertNotNull(output);
+            assertEquals(response, output.getContent().get(0));
+
+            verify(productRepository).findByNameContainingIgnoreCase("Maquita", pageable);
+            verify(productMapper).toProductResponse(any(Product.class));
+
+        }
+
+    }
+
+    @Nested
     @DisplayName("Should product by id with sucesso")
     class GetProductById {
 
