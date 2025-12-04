@@ -1,0 +1,5 @@
+### GET pesquisa produtos pele categoria
+
+GET http://localhost:5050/api/v1/products/categories/{ID DA CATEGORIA}/products
+Authorization: Bearer <SEU_TOKEN_AQUI>
+

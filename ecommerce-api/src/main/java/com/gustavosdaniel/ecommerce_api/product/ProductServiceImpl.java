@@ -6,6 +6,8 @@ import com.gustavosdaniel.ecommerce_api.category.CategoryRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -47,6 +49,26 @@ public class ProductServiceImpl implements ProductService {
         log.info("Produto Criado com sucesso {}", savedProduct.getName());
 
         return productMapper.toProductResponse(savedProduct);
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Page<ProductResponse> getAllProductsByCategoryId(Integer categoryId, Pageable pageable) {
+
+        log.info("Buscando produtos da categoria ID: {}", categoryId);
+
+        Page<Product> products = productRepository.findByCategory_Id(categoryId, pageable);
+
+        if (products.isEmpty()){
+
+            log.info("Nenhum produto encontrado na categoria ID: {}", categoryId);
+
+            return Page.empty();
+        }
+
+        log.info("Produto encontrado com sucesso: {}", products.getTotalElements());
+
+        return products.map(productMapper::toProductResponse);
     }
 
     @Override

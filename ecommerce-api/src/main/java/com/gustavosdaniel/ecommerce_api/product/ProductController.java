@@ -2,6 +2,11 @@ package com.gustavosdaniel.ecommerce_api.product;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -34,6 +39,19 @@ public class ProductController {
 
         return ResponseEntity.created(location).body(newProduct);
 
+    }
+
+    @GetMapping("/categories/{categoryId}/products")
+    @Operation(summary = "Lista produtos vinculados a uma categoria específica")
+    public ResponseEntity<Page<ProductResponse>> findAllProductsByCategoryId(
+            @PathVariable Integer categoryId,
+            @ParameterObject
+            @PageableDefault(size = 20, sort = "name",direction = Sort.Direction.ASC )
+            Pageable pageable) {
+
+        Page<ProductResponse> products = productService.getAllProductsByCategoryId(categoryId, pageable);
+
+        return ResponseEntity.ok(products);
     }
 
     @PatchMapping("{id}/activate")
