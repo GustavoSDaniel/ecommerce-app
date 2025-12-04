@@ -1,0 +1,5 @@
+### GET busca o produto pelo ID
+
+GET http://localhost:5050/api/v1/products
+Authorization: Bearer <SEU_TOKEN_AQUI>
+

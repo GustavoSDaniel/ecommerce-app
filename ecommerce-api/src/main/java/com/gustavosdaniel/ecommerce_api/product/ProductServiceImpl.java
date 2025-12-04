@@ -72,6 +72,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductResponse getProductById(Long productId) {
+
+        log.info("Buscando produto através do ID {}", productId);
+
+        Product product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
+
+        log.info("Produto encontrado com sucesso: {}", product.getName());
+
+        return productMapper.toProductResponse(product);
+
+    }
+
+    @Override
     @Transactional
     public void reactivateProduct(Long productId) {
 

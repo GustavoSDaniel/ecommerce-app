@@ -29,7 +29,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
 
-    private static final Logger log = LoggerFactory.getLogger(ProductServiceImplTest.class);
     @Mock
     private ProductMapper productMapper;
     
@@ -181,6 +180,50 @@ class ProductServiceImplTest {
             assertEquals(3, output.getTotalElements());
 
             verify(productMapper, times(3)).toProductResponse(any(Product.class));
+
+        }
+    }
+
+    @Nested
+    @DisplayName("Should product by id with sucesso")
+    class GetProductById {
+
+        @Test
+        void getProductById() {
+
+            Integer id = 1;
+            String categoryName = "Eletricos";
+            String descriptionCategory = "Produtos eletricos de qualidade superior";
+
+            Category category = new Category(categoryName, descriptionCategory);
+            ReflectionTestUtils.setField(category, "id", id);
+
+            Long productId = 1L;
+            String name = "TV";
+            String description = "TV descricao";
+            MeasureUnit measureUnit = MeasureUnit.UNIDADE;
+            BigDecimal availableQuantity = BigDecimal.valueOf(5);
+            BigDecimal price = BigDecimal.valueOf(10);
+
+            Product product = new Product(name, description, measureUnit, availableQuantity, price);
+            ReflectionTestUtils.setField(product, "id", productId);
+
+            ProductResponse response = new ProductResponse(
+                    categoryName, productId, "Maquita", "Maquita eletrica", MeasureUnit.UNIDADE,
+                    BigDecimal.valueOf(5),BigDecimal.valueOf(40), "GUSTAVO");
+
+            when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+            when(productMapper.toProductResponse(product)).thenReturn(response);
+
+            ProductResponse output = productService.getProductById(productId);
+
+            assertNotNull(output);
+            assertEquals(response, output);
+
+            verify(productMapper).toProductResponse(any(Product.class));
+            verify(productRepository).findById(productId);
+
+
 
         }
     }

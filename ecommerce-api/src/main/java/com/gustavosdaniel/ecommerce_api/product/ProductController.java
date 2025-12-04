@@ -54,6 +54,15 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Busca Produto através do ID")
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+
+        ProductResponse product = productService.getProductById(id);
+
+        return ResponseEntity.ok(product);
+    }
+
     @PatchMapping("{id}/activate")
     @Operation(summary = "Ativa produto")
     public ResponseEntity<Void> ativarProduct(@PathVariable Long id){
