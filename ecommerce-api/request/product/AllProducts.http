@@ -1,5 +1,5 @@
 ### GET mostra todos os produtos
 
-GET  http://localhost:5050/api/v1/products
+GET  http://localhost:5050/api/v1/products/allProducts
 Authorization: Bearer <SEU_TOKEN_AQUI>
 

@@ -41,7 +41,7 @@ public class ProductController {
 
     }
 
-    @GetMapping
+    @GetMapping("/allProducts")
     @Operation(summary = "Mostra todos os produtos")
     public ResponseEntity<Page<ProductResponse>> getAllProducts(
             @ParameterObject
@@ -51,6 +51,19 @@ public class ProductController {
          Page<ProductResponse> products = productService.getAllProducts(pageable);
 
          return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/allProductsAtivos")
+    @Operation(summary = "Mostra todos os produtos ativos")
+    public ResponseEntity<Page<ProductResponse>> getAllProductsAtivos(
+
+            @ParameterObject
+            @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC)
+            Pageable pageable){
+
+        Page<ProductResponse> products = productService.getAllActiveProducts(pageable);
+
+        return ResponseEntity.ok(products);
     }
 
 

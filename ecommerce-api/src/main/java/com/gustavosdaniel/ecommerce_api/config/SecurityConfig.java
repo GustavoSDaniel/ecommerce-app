@@ -71,7 +71,9 @@ public class SecurityConfig {
                                 //Product
                                 .requestMatchers(HttpMethod.POST, "/api/v1/products/**")
                                 .hasAnyRole("ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/api/v1/products/**")
+                                .requestMatchers(HttpMethod.GET, "/api/v1/products/allProducts")
+                                .hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/v1/products/allProductsAtivos/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
                                 .requestMatchers(HttpMethod.GET, "/api/v1/products/categories/*/products/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")

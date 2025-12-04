@@ -1,0 +1,6 @@
+### GET mostra todos os produtos ativos
+
+GET  http://localhost:5050/api/v1/products/allProductsAtivos
+
+Authorization: Bearer <SEU_TOKEN_AQUI>
+

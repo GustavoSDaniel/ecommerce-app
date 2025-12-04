@@ -9,6 +9,8 @@ public interface ProductService {
 
     Page<ProductResponse> getAllProducts(Pageable pageable);
 
+    Page<ProductResponse> getAllActiveProducts(Pageable pageable);
+
     Page<ProductResponse> getAllProductsByCategoryId(Integer categoryId, Pageable pageable);
 
     ProductResponse getProductById(Long productId);

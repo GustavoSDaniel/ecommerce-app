@@ -185,6 +185,69 @@ class ProductServiceImplTest {
     }
 
     @Nested
+    @DisplayName("Should all products ativos")
+    class GetProductsAtivos {
+
+        @Test
+        void getProductsAtivos() {
+
+            Pageable pageable = PageRequest.of(0, 10);
+
+            Long productId = 1L;
+            Long productId1 = 2L;
+            Long productId2 = 3L;
+
+            Integer id = 1;
+            String categoryName = "Eletricos";
+            String description = "Produtos eletricos de qualidade superior";
+
+            Category category = new Category(categoryName, description);
+            ReflectionTestUtils.setField(category, "id", id);
+
+            Product product = new Product("Maquita", "Maquita eletrica", MeasureUnit.UNIDADE,
+                    BigDecimal.valueOf(5), BigDecimal.valueOf(40.00));
+            ReflectionTestUtils.setField(product, "id", productId);
+
+            Product product1 = new Product("TV", "TV GRANDE", MeasureUnit.UNIDADE,
+                    BigDecimal.valueOf(3), BigDecimal.valueOf(90.00));
+            ReflectionTestUtils.setField(product1, "id", productId1);
+
+            Product product2 = new Product("PC", "PC DA XUXA", MeasureUnit.UNIDADE,
+                    BigDecimal.valueOf(10), BigDecimal.valueOf(300));
+            ReflectionTestUtils.setField(product2, "id", productId2);
+
+            List<Product> products = Arrays.asList(product, product1, product2);
+
+            Page<Product> productPage = new PageImpl<>(products, pageable, products.size());
+
+            ProductResponse response = new ProductResponse(
+                    categoryName, productId, "Maquita", "Maquita eletrica", MeasureUnit.UNIDADE,
+                    BigDecimal.valueOf(5),BigDecimal.valueOf(40), "GUSTAVO");
+
+            ProductResponse response1 = new ProductResponse(
+                    categoryName, productId1, "TV", "TV GRANDE", MeasureUnit.UNIDADE,
+                    BigDecimal.valueOf(3), BigDecimal.valueOf(90.00), "GUSTAVO");
+
+            ProductResponse response2 = new ProductResponse(
+                    categoryName, productId2, "PC", "PC DA XUXA", MeasureUnit.UNIDADE,
+                    BigDecimal.valueOf(10), BigDecimal.valueOf(300), "GUSTAVO");
+
+            when(productRepository.findActiveProducts(pageable)).thenReturn(productPage);
+
+            when(productMapper.toProductResponse(product)).thenReturn(response);
+            when(productMapper.toProductResponse(product1)).thenReturn(response1);
+            when(productMapper.toProductResponse(product2)).thenReturn(response2);
+
+            Page<ProductResponse> output = productService.getAllActiveProducts( pageable);
+
+            assertNotNull(output);
+            assertEquals(3, output.getTotalElements());
+
+            verify(productMapper, times(3)).toProductResponse(any(Product.class));
+        }
+    }
+
+    @Nested
     @DisplayName("Should products by categories with sucesso")
     class GetProductsByCategory {
 

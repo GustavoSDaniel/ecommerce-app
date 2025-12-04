@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,6 +53,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<ProductResponse> getAllProducts(Pageable pageable) {
 
         log.info("Buscando todos os produtos {}", pageable.getSort());
@@ -62,6 +64,19 @@ public class ProductServiceImpl implements ProductService {
 
         return products.map(productMapper::toProductResponse);
 
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Page<ProductResponse> getAllActiveProducts(Pageable pageable) {
+
+        log.info("Buscando todos os produtos ativos ");
+
+        Page<Product> products = productRepository.findActiveProducts(pageable);
+
+        log.info("Produtos buscados com sucesso {}", products.getTotalElements());
+
+        return products.map(productMapper::toProductResponse);
     }
 
     @Override
