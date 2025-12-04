@@ -41,6 +41,19 @@ public class ProductController {
 
     }
 
+    @GetMapping
+    @Operation(summary = "Mostra todos os produtos")
+    public ResponseEntity<Page<ProductResponse>> getAllProducts(
+            @ParameterObject
+            @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC)
+            Pageable pageable){
+
+         Page<ProductResponse> products = productService.getAllProducts(pageable);
+
+         return ResponseEntity.ok(products);
+    }
+
+
     @GetMapping("/categories/{categoryId}/products")
     @Operation(summary = "Lista produtos vinculados a uma categoria específica")
     public ResponseEntity<Page<ProductResponse>> findAllProductsByCategoryId(

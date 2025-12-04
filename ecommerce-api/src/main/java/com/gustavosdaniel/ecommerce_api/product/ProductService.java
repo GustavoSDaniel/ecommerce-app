@@ -7,6 +7,8 @@ public interface ProductService {
 
     ProductResponse createProduct(Integer categoryId, ProductRequest productRequest);
 
+    Page<ProductResponse> getAllProducts(Pageable pageable);
+
     Page<ProductResponse> getAllProductsByCategoryId(Integer categoryId, Pageable pageable);
 
     ProductResponse getProductById(Long productId);

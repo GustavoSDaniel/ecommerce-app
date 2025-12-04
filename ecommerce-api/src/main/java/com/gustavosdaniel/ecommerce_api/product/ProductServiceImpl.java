@@ -52,6 +52,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Page<ProductResponse> getAllProducts(Pageable pageable) {
+
+        log.info("Buscando todos os produtos {}", pageable.getSort());
+
+        Page<Product> products = productRepository.findAll(pageable);
+
+        log.info("Produtos buscados com sucesso {}", products.getTotalElements());
+
+        return products.map(productMapper::toProductResponse);
+
+    }
+
+    @Override
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<ProductResponse> getAllProductsByCategoryId(Integer categoryId, Pageable pageable) {
 
