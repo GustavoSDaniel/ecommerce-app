@@ -67,6 +67,19 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @GetMapping("/inactive")
+    @Operation(summary = "Mostra todos os produtos inativos")
+    public ResponseEntity<Page<ProductResponse>> getAllProductsInativos(
+
+            @ParameterObject
+            @PageableDefault(size = 20, sort = "name", direction = Sort.Direction.ASC)
+            Pageable pageable
+    ){
+        Page<ProductResponse> products = productService.getAllActiveFalseProducts(pageable);
+
+        return ResponseEntity.ok(products);
+    }
+
     @GetMapping("/searchProductName")
     @Operation(summary = "Busca podrutos pelo nome")
     public ResponseEntity<Page<ProductResponse>>searchProductName(

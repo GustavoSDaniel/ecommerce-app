@@ -1,7 +1,5 @@
 package com.gustavosdaniel.ecommerce_api.product;
 
-
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +12,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
-    boolean existsByNameIgnoreCase( String name);
+    boolean existsByNameIgnoreCase(String name);
 
-    Page<Product> findActiveProducts(Pageable pageable);}
+    Page<Product> findActiveProducts(Pageable pageable);
+
+    Page<Product> findByActiveFalse(Pageable pageable);
+
+}

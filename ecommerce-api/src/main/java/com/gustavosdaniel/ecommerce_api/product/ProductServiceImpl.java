@@ -82,6 +82,24 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Page<ProductResponse> getAllActiveFalseProducts(Pageable pageable) {
+
+        log.info("Buscando todos os produtos inativos ");
+
+        Page<Product> products = productRepository.findByActiveFalse(pageable);
+
+        if (products.isEmpty()){
+
+            log.info("Nenhum produto inativo encontrado");
+        }
+
+        log.info("Produtos inativos buscados com sucesso {}", products.getTotalElements());
+
+        return products.map(productMapper::toProductResponse);
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<ProductResponse> getAllProductsByCategoryId(Integer categoryId, Pageable pageable) {
 
         log.info("Buscando produtos da categoria ID: {}", categoryId);

@@ -75,6 +75,7 @@ public class SecurityConfig {
                                 .hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/v1/products/allProductsAtivos/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
+                                .requestMatchers(HttpMethod.GET, "/api/v1/products/inactive/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/v1/products/categories/*/products/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
                                 .requestMatchers(HttpMethod.GET, "/api/v1/products/searchProductName/**")

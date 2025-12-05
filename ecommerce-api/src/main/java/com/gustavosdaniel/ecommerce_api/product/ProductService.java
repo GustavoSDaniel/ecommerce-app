@@ -3,8 +3,6 @@ package com.gustavosdaniel.ecommerce_api.product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.math.BigDecimal;
-
 public interface ProductService {
 
     ProductResponse createProduct(Integer categoryId, ProductRequest productRequest);
@@ -12,6 +10,8 @@ public interface ProductService {
     Page<ProductResponse> getAllProducts(Pageable pageable);
 
     Page<ProductResponse> getAllActiveProducts(Pageable pageable);
+
+    Page<ProductResponse> getAllActiveFalseProducts(Pageable pageable);
 
     Page<ProductResponse> getAllProductsByCategoryId(Integer categoryId, Pageable pageable);
 

@@ -1,0 +1,6 @@
+### GET mostra todos os produtos inactivos
+
+GET  http://localhost:5050/api/v1/products/inactive
+
+Authorization: Bearer <SEU_TOKEN_AQUI>
+
