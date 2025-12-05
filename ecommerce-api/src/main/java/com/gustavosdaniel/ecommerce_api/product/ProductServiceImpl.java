@@ -10,8 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-
 @Service
 public class ProductServiceImpl implements ProductService {
 
@@ -144,6 +142,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public ProductResponse getProductById(Long productId) {
 
         log.info("Buscando produto através do ID {}", productId);
@@ -180,6 +179,29 @@ public class ProductServiceImpl implements ProductService {
         log.info("Produto atualizado com sucesso: {}", updatedProduct.getId());
 
         return productMapper.toProductUpdateResponse(updatedProduct);
+    }
+
+    @Override
+    @Transactional
+    public StockUpdateResponse updateStock(Long productId, StockUpdateRequest stockUpdateDTO)
+            throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, insuficienteStockException {
+
+        log.info("Atualizando estoque do produto ID: {}", productId);
+
+        Product product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
+
+        product.handleStockOperation(stockUpdateDTO.quantity(), stockUpdateDTO.stockOperationType());
+
+        Product updateProduct = productRepository.save(product);
+
+        log.info("Estoque atualizado. Prod: {} | Operação: {} | Qtd: {} | Novo Saldo: {}",
+                productId, stockUpdateDTO.stockOperationType(),
+                stockUpdateDTO.quantity(),
+                product.getAvailableQuantity());
+
+        return productMapper.toStockUpdateResponse(updateProduct,
+                stockUpdateDTO.stockOperationType(),
+                stockUpdateDTO.quantity());
     }
 
     @Override

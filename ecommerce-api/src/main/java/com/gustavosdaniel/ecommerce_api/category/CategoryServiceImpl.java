@@ -45,6 +45,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<CategoryResponse> getCategories(Pageable pageable) {
 
         log.info("Buscando categorias");
@@ -63,6 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public CategoryResponse getCategoryById(Integer id) {
 
         log.info("Buscando categoria {}", id);
@@ -76,6 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<CategoryResponse> searchCategories(String name) {
 
         if (name == null || name.isBlank()){
@@ -127,6 +130,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteCategory(Integer id) {
 
         log.info("delete Category");

@@ -612,4 +612,48 @@ class ProductServiceImplTest {
 
     }
 
+    @Nested
+    @DisplayName("Should atualizeted stock with sucesso")
+    class AtualizeStock {
+
+        @Test
+        void atualizeStock() throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, insuficienteStockException {
+
+            Long productId = 1L;
+            String name = "TV";
+            String description = "TV descricao";
+            MeasureUnit measureUnit = MeasureUnit.UNIDADE;
+            BigDecimal availableQuantity = BigDecimal.valueOf(5);
+            BigDecimal price = BigDecimal.valueOf(10);
+
+            StockOperationType stockOperationType = StockOperationType.ADD;
+            BigDecimal quantityMovimented = BigDecimal.valueOf(3);
+            BigDecimal newQuantity = BigDecimal.valueOf(2);
+
+            Product product = new Product(
+                    name, description, measureUnit, availableQuantity, price);
+            ReflectionTestUtils.setField(product, "id", productId);
+
+            StockUpdateRequest request = new StockUpdateRequest(quantityMovimented, stockOperationType);
+
+            StockUpdateResponse  stockUpdateResponse = new StockUpdateResponse(
+                    productId, name,stockOperationType,quantityMovimented,newQuantity);
+
+            when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+            when(productRepository.save(any(Product.class))).thenReturn(product);
+            when(productMapper.toStockUpdateResponse(product,stockOperationType,quantityMovimented))
+                    .thenReturn(stockUpdateResponse);
+
+            StockUpdateResponse output = productService.updateStock(productId,request);
+
+            assertNotNull(output);
+            assertEquals(stockUpdateResponse,output);
+
+            verify(productRepository).findById(productId);
+            verify(productRepository).save(product);
+            verify(productMapper).toStockUpdateResponse(product,stockOperationType,quantityMovimented);
+
+        }
+    }
+
 }

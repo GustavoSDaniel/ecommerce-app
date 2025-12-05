@@ -128,6 +128,18 @@ public class ProductController {
 
     }
 
+    @PutMapping("/{id}/stock")
+    @Operation(summary = "Atualiza o estoque do Produto")
+    public ResponseEntity<StockUpdateResponse> updateStock(
+            @PathVariable("id") Long id,
+            @RequestBody @Valid StockUpdateRequest stockUpdateRequest)
+            throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, insuficienteStockException {
+
+        StockUpdateResponse newStock = productService.updateStock(id, stockUpdateRequest);
+
+        return ResponseEntity.ok(newStock);
+    }
+
     @PatchMapping("{id}/activate")
     @Operation(summary = "Ativa produto")
     public ResponseEntity<Void> ativarProduct(@PathVariable ("id")Long id){

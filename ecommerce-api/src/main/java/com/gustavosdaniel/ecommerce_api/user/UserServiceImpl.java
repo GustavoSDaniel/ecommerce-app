@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<UserResponse> getUsers(Pageable pageable) {
 
         log.info("Buscando todos os usuários");
@@ -83,6 +84,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<UserResponse> searchUsers(
             String userName, UserRole role, String cpf, String phoneNumber, Pageable pageable) {
 

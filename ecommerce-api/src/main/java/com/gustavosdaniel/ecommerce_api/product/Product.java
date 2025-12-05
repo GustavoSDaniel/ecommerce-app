@@ -58,6 +58,44 @@ public class Product extends AuditableBase {
             fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    public void handleStockOperation(BigDecimal quantity, StockOperationType type)
+            throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, insuficienteStockException {
+
+        if (type != StockOperationType.SET &&
+                quantity.compareTo(BigDecimal.ZERO) <= 0){
+
+            throw new StockOperationExceptionAddAndRemove();
+        }
+
+        if (type == StockOperationType.SET &&
+                quantity.compareTo(BigDecimal.ZERO) < 0){
+
+            throw new StockOperationExceptionSet();
+
+        }
+
+        switch (type) {
+
+            case ADD -> {
+                this.availableQuantity = this.availableQuantity.add(quantity);
+            }
+            case REMOVE -> {
+
+                BigDecimal newStock = this.availableQuantity.subtract(quantity);
+
+                if (newStock.compareTo(BigDecimal.ZERO) < 0) {
+
+                    throw new insuficienteStockException();
+                }
+                this.availableQuantity = newStock;
+            }
+            case SET ->
+                this.availableQuantity = quantity;
+
+        }
+
+    }
+
     public Long getId() {
         return id;
     }

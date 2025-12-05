@@ -1,0 +1,13 @@
+### PUT atualiza a quantidade de produto
+
+PUT http://localhost:5050/api/v1/products/{ID DO PRODUTO}/stock
+
+Authorization: Bearer <SEU_TOKEN_AQUI>
+Content-Type: application/json
+
+{
+    "quantity": 10,
+    "stockOperationType": "ADD" ou "REMOVE" ou "SET"
+
+
+}

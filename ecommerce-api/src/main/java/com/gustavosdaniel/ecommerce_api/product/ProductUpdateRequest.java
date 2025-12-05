@@ -14,9 +14,7 @@ public record ProductUpdateRequest(
 
         MeasureUnit measureUnit,
 
-        @Positive(message = "A quantidade disponível deve ser um valor positivo")
-        @DecimalMin(value = "0.001",
-                message = "A quantidade deve ser maior que zero (para unidades fracionadas)")
+        @PositiveOrZero(message = "A quantidade disponível deve ser um valor positivo")
         BigDecimal availableQuantity,
 
         @Positive(message = "O preço deve ser um valor positivo")

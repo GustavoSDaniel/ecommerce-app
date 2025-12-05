@@ -2,6 +2,7 @@ package com.gustavosdaniel.ecommerce_api.product;
 
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Component
@@ -92,6 +93,22 @@ public class ProductMapper {
                 product.getAvailableQuantity(),
                 product.getPrice(),
                 product.getLastModifiedBy()
+        );
+    }
+
+    public StockUpdateResponse toStockUpdateResponse(
+            Product product, StockOperationType operationType, BigDecimal quantity){
+
+        if(product == null){
+            return null;
+        }
+
+        return new StockUpdateResponse(
+                product.getId(),
+                product.getName(),
+                operationType,
+                quantity,
+                product.getAvailableQuantity()
         );
     }
 }

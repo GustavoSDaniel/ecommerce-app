@@ -2,9 +2,7 @@ package com.gustavosdaniel.ecommerce_api.exception;
 
 import com.gustavosdaniel.ecommerce_api.category.CategoryNotFoundException;
 import com.gustavosdaniel.ecommerce_api.category.NameCategoryExistException;
-import com.gustavosdaniel.ecommerce_api.product.ProductAssociateWithOrdersException;
-import com.gustavosdaniel.ecommerce_api.product.ProductNameExistsException;
-import com.gustavosdaniel.ecommerce_api.product.ProductNotFoundException;
+import com.gustavosdaniel.ecommerce_api.product.*;
 import com.gustavosdaniel.ecommerce_api.user.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -176,6 +174,44 @@ public class GlobalExceptionHandle {
                 LocalDateTime.now(),
                 null
         );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(StockOperationExceptionAddAndRemove.class)
+    public ResponseEntity<ErrorResponse>handleStockOperationExceptionAddAndRemove(StockOperationExceptionAddAndRemove ex){
+
+        log.warn("Erro de stock operation {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("Erro ao adicionar ou retirar",
+                "Erro ao adicionar ou remover item do estoque, por conta do saldo",
+                LocalDateTime.now(),
+                null);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(StockOperationExceptionSet.class)
+    public ResponseEntity<ErrorResponse>handleStockOperationExceptionSet(StockOperationExceptionSet ex){
+
+        ErrorResponse error = new ErrorResponse(
+                "Erro De Operação de estoque SET",
+                "Erro ao tentar adicionar um valor negativo ao estoqque",
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(insuficienteStockException.class)
+    public ResponseEntity<ErrorResponse> handleInsuficienteStockException(insuficienteStockException ex){
+
+        log.info("Insuficiente estoque {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("Estoqque insuficiente",
+                "Estoqque insuficiente para realizar essa operação",
+                LocalDateTime.now(),
+                null);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
