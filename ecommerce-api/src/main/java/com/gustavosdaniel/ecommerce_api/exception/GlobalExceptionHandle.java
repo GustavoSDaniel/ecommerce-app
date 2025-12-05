@@ -2,6 +2,10 @@ package com.gustavosdaniel.ecommerce_api.exception;
 
 import com.gustavosdaniel.ecommerce_api.category.CategoryNotFoundException;
 import com.gustavosdaniel.ecommerce_api.category.NameCategoryExistException;
+import com.gustavosdaniel.ecommerce_api.order.OrderStatusCanceledException;
+import com.gustavosdaniel.ecommerce_api.order.OrderStatusDeliveredException;
+import com.gustavosdaniel.ecommerce_api.order.OrderStatusPaidException;
+import com.gustavosdaniel.ecommerce_api.order.OrderStatusShippedException;
 import com.gustavosdaniel.ecommerce_api.product.*;
 import com.gustavosdaniel.ecommerce_api.user.*;
 import org.slf4j.Logger;
@@ -210,6 +214,58 @@ public class GlobalExceptionHandle {
 
         ErrorResponse error = new ErrorResponse("Estoqque insuficiente",
                 "Estoqque insuficiente para realizar essa operação",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(OrderStatusCanceledException.class)
+    public ResponseEntity<ErrorResponse>handleOrderStatusCanceledException(OrderStatusCanceledException ex){
+
+        log.info("Erro ao cancelar o pedido {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("Erro ao cancelar Pedido",
+                "Não é possível cancelar um pedido que já foi enviado ou entregue",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(OrderStatusDeliveredException.class)
+    public ResponseEntity<ErrorResponse>handleOrderStatusDeliveredException(OrderStatusDeliveredException ex){
+
+        log.info("Erro ao entregar o pedido {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("Erro ao entregar Pedido",
+                "Pedido precisa ter sido ENVIADO para ser entregue.",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(OrderStatusShippedException.class)
+    public ResponseEntity<ErrorResponse>handleOrderStatusShippedException(OrderStatusShippedException ex){
+
+        log.info("Erro ao enviar o pedido {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("Erro ao enviar Pedido",
+                "Pedido precisa estar PAGO para ser enviado",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(OrderStatusPaidException.class)
+    public ResponseEntity<ErrorResponse>handleOrderStatusPaidException(OrderStatusPaidException ex){
+
+        log.info("Erro ao pagar o pedido {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("Erro ao pagar Pedido",
+                "Pedido só pode ser pago se estiver CRIADO.",
                 LocalDateTime.now(),
                 null);
 
