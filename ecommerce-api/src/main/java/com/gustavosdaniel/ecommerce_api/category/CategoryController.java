@@ -52,7 +52,7 @@ public class CategoryController {
 
     @GetMapping("/buscaPorId/{id}")
     @Operation(summary = "Busca categoria pelo ID")
-    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Integer id) {
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable("id") Integer id) {
 
         CategoryResponse category = categoryService.getCategoryById(id);
 
@@ -71,7 +71,7 @@ public class CategoryController {
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza categoria")
     public ResponseEntity<CategoryUpdateResponse> updateCategory(
-            @PathVariable Integer id,
+            @PathVariable("id") Integer id,
             @RequestBody @Valid CategoryUpdateRequest request) {
 
         CategoryUpdateResponse category = categoryService.updateCategory(id,request);
@@ -82,7 +82,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Deleta categoria")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable("id") Integer id) {
 
         categoryService.deleteCategory(id);
 

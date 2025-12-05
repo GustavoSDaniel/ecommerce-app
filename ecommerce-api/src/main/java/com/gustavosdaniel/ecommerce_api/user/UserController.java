@@ -70,7 +70,7 @@ public class UserController {
     @PutMapping("/userUpdate/{id}")
     @Operation(summary = "Atualiza informações do usuário")
     public ResponseEntity<UserUpdateResponse> updateUser(
-            @PathVariable UUID id,
+            @PathVariable("id") UUID id,
             @RequestBody @Valid UserUpdateRequest request,
             Authentication authentication){
 
@@ -85,7 +85,7 @@ public class UserController {
     @PutMapping("/cpf/{id}")
     @Operation(summary = "Adiciona CPF para o usuário")
     public ResponseEntity<UserCpfResponse> addCpf(
-            @PathVariable UUID id,
+            @PathVariable("id") UUID id,
             @RequestBody @Valid UserAddCpf userAddCpf,
             Authentication authentication) {
 
@@ -99,7 +99,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Deleta usuário")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id, Authentication authentication) {
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") UUID id, Authentication authentication) {
 
         authorizationRole.validateUserRole(id, authentication);
 

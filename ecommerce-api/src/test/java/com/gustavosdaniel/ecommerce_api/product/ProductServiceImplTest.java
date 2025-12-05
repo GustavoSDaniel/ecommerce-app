@@ -403,6 +403,54 @@ class ProductServiceImplTest {
     }
 
     @Nested
+    @DisplayName("Should update product with sucesso")
+    class UpdateProduct{
+
+        @Test
+        void updateProduct() {
+
+            Long productId = 1L;
+
+            Integer id = 1;
+            String categoryName = "Eletricos";
+            String description = "Produtos eletricos de qualidade superior";
+
+            Category category = new Category(categoryName, description);
+            ReflectionTestUtils.setField(category, "id", id);
+
+            Product product = new Product("Maquita", "Maquita eletrica", MeasureUnit.UNIDADE,
+                    BigDecimal.valueOf(5), BigDecimal.valueOf(40.00));
+            ReflectionTestUtils.setField(product, "id", productId);
+
+            ProductUpdateRequest updateRequest = new ProductUpdateRequest(
+                    "MAQUITAATUALIZADA", "Maquita eletrica ATUALIZADA", MeasureUnit.KIT,
+                    BigDecimal.valueOf(52), BigDecimal.valueOf(400.00));
+
+            ProductUpdateResponse response = new ProductUpdateResponse(
+                    categoryName,productId,"MAQUITAATUALIZADA", "Maquita eletrica ATUALIZADA",
+                    MeasureUnit.KIT,
+                    BigDecimal.valueOf(52), BigDecimal.valueOf(400.00), "GUSTAVO");
+
+
+            when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+            when(productRepository.existsByNameIgnoreCase(updateRequest.name())).thenReturn(false);
+            when(productMapper.toProductUpdateResponse(product)).thenReturn(response);
+            when(productRepository.save(any(Product.class))).thenReturn(product);
+
+            ProductUpdateResponse output = productService.updateProduct(productId, updateRequest);
+
+            assertNotNull(output);
+            assertEquals(response, output);
+
+            verify(productRepository).findById(productId);
+            verify(productRepository).existsByNameIgnoreCase(updateRequest.name());
+            verify(productMapper).toProductUpdateResponse(product);
+            verify(productRepository).save(any(Product.class));
+
+        }
+    }
+
+    @Nested
     @DisplayName("Should ative product with sucesso")
     class ActivateProduct {
 

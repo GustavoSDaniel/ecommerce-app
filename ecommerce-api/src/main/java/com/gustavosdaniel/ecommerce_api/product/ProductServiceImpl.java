@@ -8,8 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -135,6 +136,32 @@ public class ProductServiceImpl implements ProductService {
 
         return productMapper.toProductResponse(product);
 
+    }
+
+    @Override
+    @Transactional
+    public ProductUpdateResponse updateProduct(Long productId, ProductUpdateRequest productRequest) {
+
+        log.info("Iniciando atualização do produto ID: {}", productId);
+
+        Product product = productRepository.findById(productId).orElseThrow(ProductNotFoundException::new);
+
+        if (productRequest.name() != null &&
+                !productRequest.name().equals(product.getName())
+                && productRepository.existsByNameIgnoreCase(productRequest.name())) {
+
+            log.warn("Tentativa de atualizar para nome já existente: {}", productRequest.name());
+            throw new ProductNameExistsException();
+
+        }
+
+        productMapper.updateProduct(productRequest, product);
+
+        Product updatedProduct = productRepository.save(product);
+
+        log.info("Produto atualizado com sucesso: {}", updatedProduct.getId());
+
+        return productMapper.toProductUpdateResponse(updatedProduct);
     }
 
     @Override

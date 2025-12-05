@@ -27,7 +27,7 @@ public class ProductController {
     @PostMapping("/categories/{categoryId}")
     @Operation(summary = "Cria Produto")
     public ResponseEntity<ProductResponse> createProduct(
-            @PathVariable Integer categoryId,
+            @PathVariable("categoryId") Integer categoryId,
             @RequestBody @Valid ProductRequest request) {
 
         ProductResponse newProduct = productService.createProduct(categoryId, request);
@@ -84,7 +84,7 @@ public class ProductController {
     @GetMapping("/categories/{categoryId}/products")
     @Operation(summary = "Lista produtos vinculados a uma categoria específica")
     public ResponseEntity<Page<ProductResponse>> findAllProductsByCategoryId(
-            @PathVariable Integer categoryId,
+            @PathVariable("categoryId") Integer categoryId,
             @ParameterObject
             @PageableDefault(size = 20, sort = "name",direction = Sort.Direction.ASC )
             Pageable pageable) {
@@ -96,16 +96,28 @@ public class ProductController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Busca Produto através do ID")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable("id") Long id) {
 
         ProductResponse product = productService.getProductById(id);
 
         return ResponseEntity.ok(product);
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Atualiza Produto")
+    public ResponseEntity<ProductUpdateResponse> updateProduct(
+            @PathVariable("id") Long id,
+            @RequestBody @Valid ProductUpdateRequest productUpdateRequest) {
+
+        ProductUpdateResponse productUpdate = productService.updateProduct(id, productUpdateRequest);
+
+        return ResponseEntity.ok(productUpdate);
+
+    }
+
     @PatchMapping("{id}/activate")
     @Operation(summary = "Ativa produto")
-    public ResponseEntity<Void> ativarProduct(@PathVariable Long id){
+    public ResponseEntity<Void> ativarProduct(@PathVariable ("id")Long id){
 
         productService.reactivateProduct(id);
 
@@ -114,7 +126,7 @@ public class ProductController {
 
     @PatchMapping("/{id}/desative")
     @Operation(summary = "Desativa produto")
-    public ResponseEntity<Void> desativarProduto(@PathVariable Long id) {
+    public ResponseEntity<Void> desativarProduto(@PathVariable("id") Long id) {
 
         productService.desativeProduct(id);
 
@@ -124,7 +136,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Deleta produto através do ID")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable("id") Long id) {
 
         productService.deleteProduct(id);
 

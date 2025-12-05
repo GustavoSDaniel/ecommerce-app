@@ -65,6 +65,10 @@ public class UserMapper {
 
     public void updateUser(UserUpdateRequest userUpdateRequest, User user) {
 
+        if (userUpdateRequest == null) {
+            return;
+        }
+
         if (userUpdateRequest.userName() != null && !userUpdateRequest.userName().isBlank()) {
 
             user.setUserName(userUpdateRequest.userName());

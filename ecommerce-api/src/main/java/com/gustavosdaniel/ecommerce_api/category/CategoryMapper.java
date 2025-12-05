@@ -27,12 +27,14 @@ public class CategoryMapper {
 
     public void toUpdateCategory(CategoryUpdateRequest request, Category category) {
 
-        if (request != null && !request.name().isBlank()) {
+        if (request == null) return;
+
+        if (request.name() != null && !request.name().isBlank()) {
 
             category.setName(request.name());
         }
 
-        if (request != null && !request.description().isBlank()) {
+        if (request.description() != null && !request.description().isBlank()) {
 
             category.setDescription(request.description());
         }

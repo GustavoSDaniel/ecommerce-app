@@ -2,6 +2,8 @@ package com.gustavosdaniel.ecommerce_api.product;
 
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 public class ProductMapper {
 
@@ -37,6 +39,59 @@ public class ProductMapper {
                 product.getPrice(),
                 product.getCreatedBy()
 
+        );
+    }
+
+    void updateProduct(ProductUpdateRequest request, Product product){
+
+        if (request == null){
+
+            return;
+        }
+
+        if(request.name() != null && !request.name().isBlank()){
+
+            product.setName(request.name());
+        }
+
+        if(request.description() != null && !request.description().isBlank()){
+
+            product.setDescription(request.description());
+        }
+
+        if (request.measureUnit() != null && !Objects.equals(request.measureUnit(), product.getMeasureUnit())) {
+
+            product.setMeasureUnit(request.measureUnit());
+        }
+
+        if (request.availableQuantity() != null &&
+                !Objects.equals(request.availableQuantity(), product.getAvailableQuantity())) {
+
+            product.setAvailableQuantity(request.availableQuantity());
+        }
+
+        if (request.price() != null && !Objects.equals(request.price(), product.getPrice())) {
+
+            product.setPrice(request.price());
+        }
+    }
+
+    public ProductUpdateResponse toProductUpdateResponse(Product product){
+
+        if(product == null){
+            return null;
+        }
+
+        return new ProductUpdateResponse(
+
+                product.getCategory() != null ? product.getCategory().getName() : null,
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getMeasureUnit(),
+                product.getAvailableQuantity(),
+                product.getPrice(),
+                product.getLastModifiedBy()
         );
     }
 }
