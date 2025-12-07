@@ -77,9 +77,9 @@ public class SecurityConfig {
                                 .hasAnyRole("ADMIN", "CUSTOMER")
                                 .requestMatchers(HttpMethod.GET, "/api/v1/products/searchProductName")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
-                                .requestMatchers(HttpMethod.GET, "/api/v1/products/*")
+                                .requestMatchers(HttpMethod.GET, "/api/v1/products/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
-                                .requestMatchers(HttpMethod.PUT, "/api/v1/products/*")
+                                .requestMatchers(HttpMethod.PUT, "/api/v1/products/**")
                                 .hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/api/v1/products/*/stock")
                                 .hasRole("ADMIN")
@@ -87,12 +87,13 @@ public class SecurityConfig {
                                 .hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PATCH, "/api/v1/products/*/desative")
                                 .hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.DELETE, "/api/v1/products/*")
+                                .requestMatchers(HttpMethod.DELETE, "/api/v1/products/**")
                                 .hasRole("ADMIN")
 
                                 //Order
                                 .requestMatchers(HttpMethod.POST, "/api/v1/orders/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
+                                .requestMatchers(HttpMethod.GET, "/api/v1/orders/orderId/**").hasRole("ADMIN")
 
 
                                 //TODO os outros endpoiunts

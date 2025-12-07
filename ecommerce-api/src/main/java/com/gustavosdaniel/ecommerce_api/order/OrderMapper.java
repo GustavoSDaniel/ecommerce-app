@@ -47,16 +47,12 @@ public class OrderMapper {
             return null;
         }
 
-        BigDecimal subTotal = orderItem.getUnitPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
-
         return new OrderItemResponse(
                 orderItem.getId(),
                 orderItem.getProduct().getName(),
                 orderItem.getUnitPrice(),
                 orderItem.getQuantity(),
-                subTotal
+                orderItem.subTotal()
         );
     }
-
-
 }

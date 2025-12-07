@@ -57,5 +57,21 @@ public class OrderController {
 
     }
 
+    @GetMapping("/orderId/{id}")
+    @Operation(summary = "Busca order pelo ID")
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable UUID id, Authentication authentication) {
+
+        JWTUser jwtUser = (JWTUser) authentication.getPrincipal();
+
+        UUID userId = jwtUser.UserId();
+
+        userAuthorizationRole.validateUserRole(userId, authentication);
+
+        OrderResponse order = orderService.getOrderById(id);
+
+        return ResponseEntity.ok(order);
+
+    }
+
 
 }

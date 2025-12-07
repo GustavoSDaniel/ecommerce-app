@@ -8,5 +8,8 @@ import java.util.UUID;
 
 public interface OrderService {
 
-    OrderResponse createOrder(UUID userID, OrderRequest orderRequest) throws InsuficienteStockException, StockOperationExceptionAddAndRemove, StockOperationExceptionSet;
+    OrderResponse createOrder(UUID userID, OrderRequest orderRequest)
+            throws InsuficienteStockException, StockOperationExceptionAddAndRemove, StockOperationExceptionSet;
+
+    OrderResponse getOrderById(UUID orderId);
 }

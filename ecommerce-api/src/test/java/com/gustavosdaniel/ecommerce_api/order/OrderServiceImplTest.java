@@ -100,8 +100,43 @@ class OrderServiceImplTest {
             verify(productRepository).findById(productId);
             verify(orderRepository).save(any(Order.class));
 
-
         }
+    }
+
+    @Nested
+    @DisplayName("Should order with sucesso by ID")
+    class ShouldOrderWithSucesso {
+
+        @Test
+        void shouldOrderWithSucessoById() {
+
+            UUID orderId = UUID.randomUUID();
+            String reference = "REFERENCE";
+
+            Order order = new Order();
+            ReflectionTestUtils.setField(order, "id", orderId);
+
+            OrderResponse response = new OrderResponse(
+                    orderId,
+                    reference,
+                    BigDecimal.valueOf(120.00),
+                    OrderStatus.CREATED, List.of(),
+                    null,
+                    LocalDateTime.now());
+
+
+            when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+            when(orderMapper.toOrderResponse(any(Order.class))).thenReturn(response);
+
+            OrderResponse output = orderService.getOrderById(orderId);
+
+            assertNotNull(output);
+            assertEquals(orderId, output.id());
+
+            verify(orderRepository).findById(orderId);
+            verify(orderMapper).toOrderResponse(any(Order.class));
+        }
+
     }
 
 

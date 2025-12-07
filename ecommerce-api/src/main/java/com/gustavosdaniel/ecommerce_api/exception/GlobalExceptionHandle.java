@@ -2,10 +2,7 @@ package com.gustavosdaniel.ecommerce_api.exception;
 
 import com.gustavosdaniel.ecommerce_api.category.CategoryNotFoundException;
 import com.gustavosdaniel.ecommerce_api.category.NameCategoryExistException;
-import com.gustavosdaniel.ecommerce_api.order.OrderStatusCanceledException;
-import com.gustavosdaniel.ecommerce_api.order.OrderStatusDeliveredException;
-import com.gustavosdaniel.ecommerce_api.order.OrderStatusPaidException;
-import com.gustavosdaniel.ecommerce_api.order.OrderStatusShippedException;
+import com.gustavosdaniel.ecommerce_api.order.*;
 import com.gustavosdaniel.ecommerce_api.product.*;
 import com.gustavosdaniel.ecommerce_api.user.*;
 import org.slf4j.Logger;
@@ -270,5 +267,21 @@ public class GlobalExceptionHandle {
                 null);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleOrderNotFoundException(OrderNotFoundException ex){
+
+        log.info("Erro ao tentar buscar o pedido {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse(
+                "Pedido não encontrado",
+                "O pedido informado não existe",
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+
     }
 }

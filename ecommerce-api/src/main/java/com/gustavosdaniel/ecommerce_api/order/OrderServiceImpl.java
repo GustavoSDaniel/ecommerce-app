@@ -76,4 +76,17 @@ public class OrderServiceImpl implements OrderService {
 
         return orderMapper.toOrderResponse(saveOrder);
     }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public OrderResponse getOrderById(UUID orderId) {
+
+        log.info("Buscando order pelo ID");
+
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+
+        log.info("Retornando order com ID: {}", orderId);
+
+        return orderMapper.toOrderResponse(order);
+    }
 }
