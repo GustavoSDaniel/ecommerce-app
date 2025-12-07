@@ -59,7 +59,7 @@ public class Product extends AuditableBase {
     private List<OrderItem> orderItems = new ArrayList<>();
 
     public void handleStockOperation(BigDecimal quantity, StockOperationType type)
-            throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, insuficienteStockException {
+            throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException {
 
         if (type != StockOperationType.SET &&
                 quantity.compareTo(BigDecimal.ZERO) <= 0){
@@ -85,7 +85,7 @@ public class Product extends AuditableBase {
 
                 if (newStock.compareTo(BigDecimal.ZERO) < 0) {
 
-                    throw new insuficienteStockException();
+                    throw new InsuficienteStockException();
                 }
                 this.availableQuantity = newStock;
             }

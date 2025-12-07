@@ -617,7 +617,7 @@ class ProductServiceImplTest {
     class AtualizeStock {
 
         @Test
-        void atualizeStock() throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, insuficienteStockException {
+        void atualizeStock() throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException {
 
             Long productId = 1L;
             String name = "TV";

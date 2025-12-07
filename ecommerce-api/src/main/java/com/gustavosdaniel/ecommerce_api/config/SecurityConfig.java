@@ -90,6 +90,10 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/api/v1/products/*")
                                 .hasRole("ADMIN")
 
+                                //Order
+                                .requestMatchers(HttpMethod.POST, "/api/v1/orders/**")
+                                .hasAnyRole("ADMIN", "CUSTOMER")
+
 
                                 //TODO os outros endpoiunts
 

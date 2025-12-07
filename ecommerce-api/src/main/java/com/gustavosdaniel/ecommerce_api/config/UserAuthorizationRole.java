@@ -14,7 +14,7 @@ import java.util.UUID;
 @Component
 public class UserAuthorizationRole {
 
-    private final static Logger log = LoggerFactory.getLogger(UserAuthorizationRole.class);
+    private static final  Logger log = LoggerFactory.getLogger(UserAuthorizationRole.class);
 
     public void validateUserRole(UUID userId, Authentication authorization) {
 

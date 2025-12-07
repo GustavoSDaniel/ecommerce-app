@@ -21,7 +21,7 @@ public interface ProductService {
 
     ProductUpdateResponse updateProduct(Long productId, ProductUpdateRequest productRequest);
 
-    StockUpdateResponse updateStock(Long productId, StockUpdateRequest stockUpdateDTO) throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, insuficienteStockException;
+    StockUpdateResponse updateStock(Long productId, StockUpdateRequest stockUpdateDTO) throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException;
 
     void reactivateProduct(Long productId);
 

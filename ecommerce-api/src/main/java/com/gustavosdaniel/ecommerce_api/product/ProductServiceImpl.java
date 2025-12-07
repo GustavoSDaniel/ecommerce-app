@@ -184,7 +184,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public StockUpdateResponse updateStock(Long productId, StockUpdateRequest stockUpdateDTO)
-            throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, insuficienteStockException {
+            throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException {
 
         log.info("Atualizando estoque do produto ID: {}", productId);
 

@@ -6,7 +6,6 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -133,7 +132,7 @@ public class ProductController {
     public ResponseEntity<StockUpdateResponse> updateStock(
             @PathVariable("id") Long id,
             @RequestBody @Valid StockUpdateRequest stockUpdateRequest)
-            throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, insuficienteStockException {
+            throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException {
 
         StockUpdateResponse newStock = productService.updateStock(id, stockUpdateRequest);
 

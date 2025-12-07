@@ -56,6 +56,7 @@ public class Order extends AuditableBase {
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
+
     @PrePersist
     public void prePersist() {
 

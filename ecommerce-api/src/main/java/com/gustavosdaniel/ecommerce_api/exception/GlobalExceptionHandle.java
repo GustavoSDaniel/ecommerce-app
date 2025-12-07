@@ -207,8 +207,8 @@ public class GlobalExceptionHandle {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(insuficienteStockException.class)
-    public ResponseEntity<ErrorResponse> handleInsuficienteStockException(insuficienteStockException ex){
+    @ExceptionHandler(InsuficienteStockException.class)
+    public ResponseEntity<ErrorResponse> handleInsuficienteStockException(InsuficienteStockException ex){
 
         log.info("Insuficiente estoque {}", ex.getMessage());
 

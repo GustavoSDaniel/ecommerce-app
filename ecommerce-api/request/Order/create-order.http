@@ -1,0 +1,19 @@
+### POST criar order
+
+POST http://localhost:5050/api/v1/orders
+Authorization: Bearer <SEU_TOKEN_AQUI>
+Content-Type: application/json
+
+
+{
+  "itens": [
+    {
+      "productId": 1,
+      "quantity": 5
+    },
+    {
+      "productId": 2,
+      "quantity": 1
+    }
+  ]
+}

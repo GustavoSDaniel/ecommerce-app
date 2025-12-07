@@ -7,6 +7,8 @@ CREATE TABLE order_item (
                             product_id BIGINT NOT NULL,
                             order_id UUID NOT NULL,
 
+                            created_by VARCHAR(255) NOT NULL,
+                            last_modified_by VARCHAR(255),
                             created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                             updated_at TIMESTAMP WITHOUT TIME ZONE,
 
