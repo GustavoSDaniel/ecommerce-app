@@ -8,6 +8,11 @@ import com.gustavosdaniel.ecommerce_api.product.StockOperationExceptionSet;
 import com.gustavosdaniel.ecommerce_api.user.JWTUser;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -72,6 +77,24 @@ public class OrderController {
         return ResponseEntity.ok(order);
 
     }
+
+    @GetMapping("/my-orders")
+    @Operation(summary = "Retorna os pedidos do usuario")
+    public ResponseEntity<Page<OrderResponse>> getOrdersByUserId(
+            Authentication authentication,
+            @ParameterObject
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable){
+
+                JWTUser jwtUser = (JWTUser) authentication.getPrincipal();
+
+                UUID userId = jwtUser.UserId();
+
+                Page<OrderResponse> orders = orderService.getOrdersByUserId(userId, pageable);
+
+                return ResponseEntity.ok(orders);
+    }
+
 
 
 }

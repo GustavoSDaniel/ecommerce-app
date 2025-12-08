@@ -12,14 +12,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -137,6 +138,50 @@ class OrderServiceImplTest {
             verify(orderMapper).toOrderResponse(any(Order.class));
         }
 
+    }
+
+    @Nested
+    @DisplayName("Should order to userId with sucesso")
+    class ShouldOrderToUserIdWithSucesso {
+
+        @Test
+        void shouldOrderToUserIdWithSucesso() {
+
+            UUID userId = UUID.randomUUID();
+            UUID orderId = UUID.randomUUID();
+            String reference = "REFERENCE";
+
+            Pageable pageable = PageRequest.of(0, 1);
+
+            Order order = new Order();
+            ReflectionTestUtils.setField(order, "id", orderId);
+
+            List<Order> orderList = Arrays.asList(order);
+
+            Page<Order> orders = new PageImpl<>(orderList, pageable, orderList.size());
+
+            OrderResponse response = new OrderResponse(
+                    orderId,
+                    reference,
+                    BigDecimal.valueOf(120.00),
+                    OrderStatus.CREATED, List.of(),
+                    null,
+                    LocalDateTime.now());
+
+
+            when(orderRepository.findByUserId(userId, pageable)).thenReturn(orders);
+            when(orderMapper.toOrderResponse(any(Order.class))).thenReturn(response);
+
+            Page<OrderResponse> output = orderService.getOrdersByUserId(userId, pageable);
+
+            assertNotNull(output);
+            assertEquals(orderId, response.id());
+
+            verify(orderRepository).findByUserId(userId, pageable);
+            verify(orderMapper).toOrderResponse(any(Order.class));
+
+
+        }
     }
 
 
