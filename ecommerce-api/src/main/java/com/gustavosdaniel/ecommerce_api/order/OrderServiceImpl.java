@@ -143,4 +143,28 @@ public class OrderServiceImpl implements OrderService {
 
         return orders.map(orderMapper::toOrderResponse);
     }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Page<OrderResponse> getOrdersByUserAndStatus(UUID userId, OrderStatus status, Pageable pageable) {
+
+        log.info("Buscando orders pelo status {}, do user {}", status, userId);
+
+        Page<Order> orders;
+
+        if (status == null) {
+
+            orders = orderRepository.findByUserId(userId, pageable);
+
+        } else {
+
+            orders = orderRepository.findByUserIdAndOrderStatus(userId, status, pageable);
+        }
+
+        log.info("Retornando {} pedidos encontrados com status {} para o suauario {}",
+                orders.getTotalElements(), status, userId);
+
+        return orders.map(orderMapper::toOrderResponse);
+
+    }
 }

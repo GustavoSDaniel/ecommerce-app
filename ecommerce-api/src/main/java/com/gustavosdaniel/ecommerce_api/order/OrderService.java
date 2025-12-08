@@ -22,5 +22,7 @@ public interface OrderService {
 
     Page<OrderResponse> getOrderByStatus(OrderStatus status, Pageable pageable);
 
+    Page<OrderResponse> getOrdersByUserAndStatus(UUID userId, OrderStatus status, Pageable pageable);
+
 
 }

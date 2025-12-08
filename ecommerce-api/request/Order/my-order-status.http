@@ -1,0 +1,5 @@
+### GET request mostra o status do pedido pelo usuario
+
+GET http://localhost:5050/api/v1/orders/my-orders-status
+Authorization: Bearer <SEU_TOKEN_AQUI>
+

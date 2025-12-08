@@ -125,4 +125,25 @@ public class OrderController {
 
     }
 
+    @GetMapping("my-orders-status")
+    @Operation(summary = "Busca pedidos do usuario pelo status")
+    public ResponseEntity<Page<OrderResponse>> getOrdersByUserByStatus(
+
+            Authentication authentication,
+            @RequestParam(required = false) OrderStatus status,
+            @ParameterObject
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ){
+
+        JWTUser jwtUser = (JWTUser) authentication.getPrincipal();
+
+        UUID userId = jwtUser.UserId();
+
+        Page<OrderResponse> orders = orderService.getOrdersByUserAndStatus(userId, status, pageable);
+
+        return ResponseEntity.ok(orders);
+
+    }
+
 }

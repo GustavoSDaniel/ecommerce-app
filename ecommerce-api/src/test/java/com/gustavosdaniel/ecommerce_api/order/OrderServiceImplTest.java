@@ -275,7 +275,53 @@ class OrderServiceImplTest {
             assertNotNull(output);
             assertEquals(orderId, output.getContent().get(0).id());
 
-            verify(orderRepository).findByOrderStatus(OrderStatus.CREATED, pageable);
+            verify(orderRepository).findByOrderStatus(OrderStatus.PAID, pageable);
+            verify(orderMapper).toOrderResponse(order);
+
+        }
+    }
+
+    @Nested
+    @DisplayName("Should order to status for user with sucesso")
+    class ShouldOrderToStatusForUserWithSucesso {
+
+        @Test
+        void shouldOrderToStatusForUserWithSucesso() {
+
+            UUID orderId = UUID.randomUUID();
+            UUID userId = UUID.randomUUID();
+            String reference = "REFERENCE";
+
+
+            Order order = new Order();
+            ReflectionTestUtils.setField(order, "id", orderId);
+            ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.PAID);
+
+            Pageable pageable = PageRequest.of(0, 10);
+
+            List<Order> orderList = Arrays.asList(order);
+
+            Page<Order> orders = new PageImpl<>(orderList, pageable, orderList.size());
+
+            OrderResponse response = new OrderResponse(
+                    orderId,
+                    reference,
+                    BigDecimal.valueOf(120.00),
+                    OrderStatus.CREATED, List.of(),
+                    null,
+                    LocalDateTime.now());
+
+            when(orderRepository
+                    .findByUserIdAndOrderStatus(userId,OrderStatus.PAID, pageable)).thenReturn(orders);
+            when(orderMapper.toOrderResponse(order)).thenReturn(response);
+
+            Page<OrderResponse> output = orderService
+                    .getOrdersByUserAndStatus(userId, OrderStatus.PAID, pageable);
+
+            assertNotNull(output);
+            assertEquals(orderId, output.getContent().get(0).id());
+
+            verify(orderRepository).findByUserIdAndOrderStatus(userId, OrderStatus.PAID, pageable);
             verify(orderMapper).toOrderResponse(order);
 
         }
