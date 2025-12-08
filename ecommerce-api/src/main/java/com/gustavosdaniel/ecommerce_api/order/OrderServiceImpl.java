@@ -125,4 +125,22 @@ public class OrderServiceImpl implements OrderService {
 
         return orders.map(orderMapper::toOrderResponse);
     }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Page<OrderResponse> getOrderByStatus(OrderStatus status, Pageable pageable) {
+
+        log.info("Buscando orders pelo status {}", status);
+
+        Page<Order> orders = orderRepository.findByOrderStatus(status, pageable);
+
+        if (orders.isEmpty()) {
+
+            log.info("Nenhum order encontrado com esse status {}", status);
+        }
+
+        log.info("Retornando {} pedidos encontrados com status {}", orders.getTotalElements(), status);
+
+        return orders.map(orderMapper::toOrderResponse);
+    }
 }

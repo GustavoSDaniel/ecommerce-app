@@ -101,6 +101,7 @@ public class SecurityConfig {
                                 .hasAnyRole("ADMIN", "CUSTOMER")
                                 .requestMatchers(HttpMethod.GET, "/api/v1/orders/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/v1/orders/orderId/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/v1/orders/by-status/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/v1/orders/my-orders/**")
                                 .hasAnyRole("ADMIN", "CUSTUMER")
 

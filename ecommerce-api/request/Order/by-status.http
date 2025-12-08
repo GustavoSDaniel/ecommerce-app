@@ -1,0 +1,4 @@
+### GET request para buscar pedidos pelo status
+
+GET http://localhost:5050/api/v1/orders/by-status
+Authorization: Bearer <SEU_TOKEN_AQUI>

@@ -9,4 +9,7 @@ import java.util.UUID;
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     Page<Order> findByUserId(UUID userId, Pageable pageable);
+
+    Page<Order> findByOrderStatus(OrderStatus status, Pageable pageable);
+
 }

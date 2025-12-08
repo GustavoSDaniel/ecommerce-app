@@ -110,6 +110,19 @@ public class OrderController {
                 return ResponseEntity.ok(orders);
     }
 
+    @GetMapping("/by-status")
+    @Operation(summary = "Busca pedidos por status")
+    public ResponseEntity<Page<OrderResponse>> getOrdersByStatus(
+            @RequestParam OrderStatus status,
+            @ParameterObject
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ){
 
+        Page<OrderResponse> orders = orderService.getOrderByStatus(status, pageable);
+
+        return ResponseEntity.ok(orders);
+
+    }
 
 }

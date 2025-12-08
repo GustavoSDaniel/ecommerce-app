@@ -235,6 +235,48 @@ class OrderServiceImplTest {
 
             verify(orderRepository, times(1)).findAll(pageable);
 
+        }
+    }
+
+    @Nested
+    @DisplayName("Should order to status with sucesso")
+    class ShouldOrderToStatusWithSucesso {
+
+        @Test
+        void shouldOrderToStatusWithSucesso() {
+
+            UUID orderId = UUID.randomUUID();
+            String reference = "REFERENCE";
+
+
+            Order order = new Order();
+            ReflectionTestUtils.setField(order, "id", orderId);
+            ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.CREATED);
+
+            Pageable pageable = PageRequest.of(0, 10);
+
+            List<Order> orderList = Arrays.asList(order);
+
+            Page<Order> orders = new PageImpl<>(orderList, pageable, orderList.size());
+
+            OrderResponse response = new OrderResponse(
+                    orderId,
+                    reference,
+                    BigDecimal.valueOf(120.00),
+                    OrderStatus.CREATED, List.of(),
+                    null,
+                    LocalDateTime.now());
+
+            when(orderRepository.findByOrderStatus(OrderStatus.CREATED, pageable)).thenReturn(orders);
+            when(orderMapper.toOrderResponse(order)).thenReturn(response);
+
+            Page<OrderResponse> output = orderService.getOrderByStatus(OrderStatus.CREATED, pageable);
+
+            assertNotNull(output);
+            assertEquals(orderId, output.getContent().get(0).id());
+
+            verify(orderRepository).findByOrderStatus(OrderStatus.CREATED, pageable);
+            verify(orderMapper).toOrderResponse(order);
 
         }
     }
