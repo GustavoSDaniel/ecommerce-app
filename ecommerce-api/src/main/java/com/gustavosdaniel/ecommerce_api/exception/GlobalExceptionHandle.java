@@ -301,4 +301,19 @@ public class GlobalExceptionHandle {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex){
+
+        log.info("Usuario tentou cancelar um pedido que não é dele");
+
+        ErrorResponse error = new ErrorResponse("Pedido não pode ser cancelado",
+                "Usuário tentou cancelar um pedido que não é seu",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+
 }

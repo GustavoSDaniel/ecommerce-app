@@ -163,4 +163,18 @@ public class OrderController {
         return order.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @PatchMapping("canceled/{id}")
+    @Operation(summary = "Cancela Pedido")
+    public ResponseEntity<Void> cancelOrder(@PathVariable("id") UUID id, Authentication authentication)
+            throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException {
+
+        JWTUser jwtUser = (JWTUser) authentication.getPrincipal();
+
+        UUID userId = jwtUser.UserId();
+
+        orderService.cancelarOrder(id, userId);
+
+        return ResponseEntity.ok().build();
+    }
+
 }

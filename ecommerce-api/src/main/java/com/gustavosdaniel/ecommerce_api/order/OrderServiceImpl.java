@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,12 +38,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResponse createOrder(UUID userID, OrderRequest orderRequest) throws InsuficienteStockException,
+    public OrderResponse createOrder(UUID userId, OrderRequest orderRequest) throws InsuficienteStockException,
             StockOperationExceptionAddAndRemove, StockOperationExceptionSet {
 
-        log.info("Creating order");
-
-        User user = userRepository.findById(userID).orElseThrow(UserNotFoundException::new);
+        log.info("Criando pedido para o usuário: {}", userId);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         Order newOrder = new Order();
         newOrder.setUser(user);
@@ -49,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
         for (OrderItemRequest item : orderRequest.itens()) {
 
             Product product = productRepository.findById(item.productId())
-                    .orElseThrow(ProductNameExistsException::new);
+                    .orElseThrow(ProductNotFoundException::new);
 
             BigDecimal quantityProductRequested = BigDecimal.valueOf(item.quantity());
 
@@ -188,4 +189,47 @@ public class OrderServiceImpl implements OrderService {
 
         return order.map(orderMapper::toOrderResponse);
     }
+
+    @Override
+    @Transactional
+    public void cancelarOrder(UUID orderId, UUID userId)
+            throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException {
+
+        log.info("Tentativa de cancelamento do pedido {} pelo usuário {}", orderId, userId);
+
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+
+        if (!order.getUser().getId().equals(userId)) {
+
+            log.warn("Usuário {} tentou cancelar pedido {} de outro usuário", userId, orderId);
+
+            throw new AccessDeniedException();
+        }
+
+        order.cancelOrder();
+
+        List<Product> updateProducts = new ArrayList<>();
+
+        for (OrderItem item : order.getOrderItems()) {
+
+            Product product = item.getProduct();
+
+            product.handleStockOperation(BigDecimal.valueOf(item.getQuantity()), StockOperationType.ADD);
+
+            updateProducts.add(product);
+        }
+
+        if (!updateProducts.isEmpty()) {
+
+            productRepository.saveAll(updateProducts);
+
+        }
+
+        orderRepository.save(order);
+
+        log.info("Pedido {} cancelado com sucesso. {} itens devolvidos ao estoque",
+                order.getReference(),
+                order.getOrderItems().size());
+    }
+
 }

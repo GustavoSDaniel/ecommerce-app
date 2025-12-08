@@ -27,5 +27,7 @@ public interface OrderService {
 
     Optional<OrderResponse> searchOrdersByReference(UUID userId, String reference);
 
+    void cancelarOrder(UUID orderId, UUID userId) throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException;
+
 
 }

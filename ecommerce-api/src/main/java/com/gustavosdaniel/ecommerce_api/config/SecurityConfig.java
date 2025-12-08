@@ -108,6 +108,8 @@ public class SecurityConfig {
                                 .hasAnyRole("ADMIN", "CUSTOMER")
                                 .requestMatchers(HttpMethod.GET, "/api/v1/orders/my-reference/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
+                                .requestMatchers(HttpMethod.PATCH, "api/v1/orders/canceled/**")
+                                .hasAnyRole("ADMIN", "CUSTOMER")
 
 
 

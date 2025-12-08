@@ -361,6 +361,37 @@ class OrderServiceImplTest {
         }
     }
 
+    @Nested
+    @DisplayName("Should canceled order with sucesso")
+    class ShouldCanceledOrderWithSucesso {
+
+        @Test
+        void shouldCanceledOrderWithSucesso() throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException {
+
+            UUID orderId = UUID.randomUUID();
+            UUID userId = UUID.randomUUID();
+            Long productId = 1L;
+
+            Order order = new Order();
+            ReflectionTestUtils.setField(order, "id", orderId);
+            ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.CANCELLED);
+
+            Product product = new Product("Maquita", "Maquita eletrica", MeasureUnit.UNIDADE,
+                    BigDecimal.valueOf(5), BigDecimal.valueOf(40.00));
+            ReflectionTestUtils.setField(product, "id", productId);
+
+            OrderItem orderItem = new OrderItem();
+            orderItem.setProduct(product);
+            orderItem.setQuantity(2);
+
+            when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+           orderService.cancelarOrder(orderId, userId);
+
+           assertEquals(OrderStatus.CANCELLED, order.getOrderStatus());
+        }
+    }
+
 
 
 }

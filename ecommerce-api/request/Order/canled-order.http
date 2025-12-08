@@ -1,0 +1,6 @@
+### PATCH cancela o pedido
+
+PATCH http://localhost:5050/api/v1/orders/canceled/{ID DO PEDIDO}
+Authorization: Bearer <SEU_TOKEN_AQUI>
+
+###
