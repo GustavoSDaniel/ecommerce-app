@@ -12,10 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
@@ -322,6 +319,43 @@ class OrderServiceImplTest {
             assertEquals(orderId, output.getContent().get(0).id());
 
             verify(orderRepository).findByUserIdAndOrderStatus(userId, OrderStatus.PAID, pageable);
+            verify(orderMapper).toOrderResponse(order);
+
+        }
+    }
+
+    @Nested
+    @DisplayName("Should order by reference with sucesso")
+    class ShouldOrderByReferenceWithSucesso {
+
+        @Test
+        void shouldOrderByReferenceWithSucesso() {
+
+            UUID orderId = UUID.randomUUID();
+            UUID userId = UUID.randomUUID();
+            String reference = "REFERENCE";
+
+            Order order = new Order();
+            ReflectionTestUtils.setField(order, "id", orderId);
+            ReflectionTestUtils.setField(order, "reference", reference);
+
+            OrderResponse response = new OrderResponse(
+                    orderId,
+                    reference,
+                    BigDecimal.valueOf(120.00),
+                    OrderStatus.CREATED, List.of(),
+                    null,
+                    LocalDateTime.now());
+
+            when(orderRepository.findByUserIdAndReference(userId, reference)).thenReturn(Optional.of(order));
+            when(orderMapper.toOrderResponse(order)).thenReturn(response);
+
+            Optional<OrderResponse> output = orderService.searchOrdersByReference(userId,reference);
+
+            assertNotNull(output);
+            assertEquals(orderId, output.get().id());
+
+            verify(orderRepository).findByUserIdAndReference(userId, reference);
             verify(orderMapper).toOrderResponse(order);
 
         }

@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, UUID> {
@@ -13,5 +14,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     Page<Order> findByOrderStatus(OrderStatus status, Pageable pageable);
 
     Page<Order> findByUserIdAndOrderStatus(UUID userId, OrderStatus status, Pageable pageable);
+
+    Optional<Order> findByUserIdAndReference(UUID userId, String reference);
 
 }

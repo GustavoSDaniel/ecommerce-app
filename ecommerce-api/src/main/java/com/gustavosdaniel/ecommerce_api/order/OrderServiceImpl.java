@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -166,5 +167,25 @@ public class OrderServiceImpl implements OrderService {
 
         return orders.map(orderMapper::toOrderResponse);
 
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Optional<OrderResponse> searchOrdersByReference(UUID userId, String reference) {
+
+        log.info("Buscando pedido pela referência: {} para o usuário: {}", reference, userId);
+
+        Optional<Order> order = orderRepository.findByUserIdAndReference(userId, reference);
+
+        if (order.isEmpty()) {
+
+            log.info("Nenhum order encontrado com essa referencia {}", reference);
+
+            return Optional.empty();
+        }
+
+        log.info("Pedido encontrado: {}", order.get().getId());
+
+        return order.map(orderMapper::toOrderResponse);
     }
 }

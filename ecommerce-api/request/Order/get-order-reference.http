@@ -1,0 +1,5 @@
+### GET busca pedido pela referencia
+
+GET http://localhost:5050/api/v1/orders/my-reference
+Authorization: Bearer <SEU_TOKEN_AQUI>
+

@@ -22,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -144,6 +145,22 @@ public class OrderController {
 
         return ResponseEntity.ok(orders);
 
+    }
+
+    @GetMapping("/my-reference")
+    @Operation(summary = "Busca pedido pela referencia")
+    public ResponseEntity<OrderResponse> getOrderByReference(
+            Authentication authentication,
+            @RequestParam String reference
+    ){
+
+        JWTUser jwtUser = (JWTUser) authentication.getPrincipal();
+
+        UUID userId = jwtUser.UserId();
+
+        Optional<OrderResponse> order = orderService.searchOrdersByReference(userId, reference);
+
+        return order.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
 }

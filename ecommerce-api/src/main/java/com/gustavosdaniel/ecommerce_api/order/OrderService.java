@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface OrderService {
@@ -23,6 +24,8 @@ public interface OrderService {
     Page<OrderResponse> getOrderByStatus(OrderStatus status, Pageable pageable);
 
     Page<OrderResponse> getOrdersByUserAndStatus(UUID userId, OrderStatus status, Pageable pageable);
+
+    Optional<OrderResponse> searchOrdersByReference(UUID userId, String reference);
 
 
 }
