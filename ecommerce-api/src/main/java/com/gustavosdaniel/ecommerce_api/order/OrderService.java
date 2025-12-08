@@ -14,7 +14,11 @@ public interface OrderService {
     OrderResponse createOrder(UUID userID, OrderRequest orderRequest)
             throws InsuficienteStockException, StockOperationExceptionAddAndRemove, StockOperationExceptionSet;
 
+    Page<OrderResponse> getAllOrders(Pageable pageable);
+
     OrderResponse getOrderById(UUID orderId);
 
     Page<OrderResponse> getOrdersByUserId(UUID userId, Pageable pageable);
+
+
 }

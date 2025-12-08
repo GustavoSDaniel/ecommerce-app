@@ -62,6 +62,21 @@ public class OrderController {
 
     }
 
+    @GetMapping
+    @Operation(summary = "Busca todos os pedidos")
+    public ResponseEntity<Page<OrderResponse>> findAll(
+
+            @ParameterObject
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ){
+
+        Page<OrderResponse> orders = orderService.getAllOrders(pageable);
+
+        return ResponseEntity.ok(orders);
+
+    }
+
     @GetMapping("/orderId/{id}")
     @Operation(summary = "Busca order pelo ID")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable UUID id, Authentication authentication) {

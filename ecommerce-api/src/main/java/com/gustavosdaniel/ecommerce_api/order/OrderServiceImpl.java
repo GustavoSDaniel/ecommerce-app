@@ -81,6 +81,24 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Page<OrderResponse> getAllOrders(Pageable pageable) {
+
+        log.info("Getting orders");
+
+        Page<Order> orders = orderRepository.findAll(pageable);
+
+        if (orders.isEmpty()) {
+
+            log.info("No orders found");
+        }
+
+        log.info("Retornando {} orders  com sucesso", orders.getTotalElements());
+
+        return orders.map(orderMapper::toOrderResponse);
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public OrderResponse getOrderById(UUID orderId) {
 
         log.info("Buscando order pelo ID");

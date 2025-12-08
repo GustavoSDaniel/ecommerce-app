@@ -24,8 +24,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
@@ -179,6 +178,62 @@ class OrderServiceImplTest {
 
             verify(orderRepository).findByUserId(userId, pageable);
             verify(orderMapper).toOrderResponse(any(Order.class));
+
+
+        }
+    }
+
+    @Nested
+    @DisplayName("Should all orders with sucesso")
+    class ShouldAllOrdersWithSucesso {
+
+        @Test
+        void shouldAllOrdersWithSucesso() {
+
+            UUID orderId = UUID.randomUUID();
+            UUID orderId2 = UUID.randomUUID();
+            String reference = "REFERENCE";
+            String reference2 = "REFERENCE";
+
+            Order order = new Order();
+            ReflectionTestUtils.setField(order, "id", orderId);
+
+            Order order2 = new Order();
+            ReflectionTestUtils.setField(order2, "id", orderId2);
+
+            Pageable pageable = PageRequest.of(0, 10);
+
+            List<Order> orderList = Arrays.asList(order, order2);
+
+            Page<Order> orders = new PageImpl<>(orderList, pageable, orderList.size());
+
+            OrderResponse response = new OrderResponse(
+                    orderId,
+                    reference,
+                    BigDecimal.valueOf(120.00),
+                    OrderStatus.CREATED, List.of(),
+                    null,
+                    LocalDateTime.now());
+
+            OrderResponse response2 = new OrderResponse(
+                    orderId,
+                    reference2,
+                    BigDecimal.valueOf(120.00),
+                    OrderStatus.CREATED, List.of(),
+                    null,
+                    LocalDateTime.now());
+
+            when(orderRepository.findAll(pageable)).thenReturn(orders);
+            when(orderMapper.toOrderResponse(order)).thenReturn(response);
+            when(orderMapper.toOrderResponse(order2)).thenReturn(response2);
+
+            Page<OrderResponse> output = orderService.getAllOrders(pageable);
+
+            assertNotNull(output);
+            assertEquals(2, output.getTotalElements());
+            assertEquals(orderId, output.getContent().get(0).id());
+
+            verify(orderRepository, times(1)).findAll(pageable);
 
 
         }
