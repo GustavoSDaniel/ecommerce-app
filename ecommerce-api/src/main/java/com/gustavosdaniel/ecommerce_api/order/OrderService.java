@@ -3,6 +3,9 @@ package com.gustavosdaniel.ecommerce_api.order;
 import com.gustavosdaniel.ecommerce_api.product.InsuficienteStockException;
 import com.gustavosdaniel.ecommerce_api.product.StockOperationExceptionAddAndRemove;
 import com.gustavosdaniel.ecommerce_api.product.StockOperationExceptionSet;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.UUID;
 
@@ -12,4 +15,6 @@ public interface OrderService {
             throws InsuficienteStockException, StockOperationExceptionAddAndRemove, StockOperationExceptionSet;
 
     OrderResponse getOrderById(UUID orderId);
+
+    Page<OrderUserResponse> getOrdersByUserId(UUID userId, Pageable pageable);
 }

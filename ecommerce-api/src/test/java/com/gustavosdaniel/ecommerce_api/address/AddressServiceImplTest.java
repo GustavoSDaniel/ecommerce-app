@@ -16,8 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,5 +91,51 @@ class AddressServiceImplTest {
 
         }
 
+    }
+
+    @Nested
+    @DisplayName("Should remove address to user with sucesso")
+    class removeAddress {
+
+        @Test
+        void shoulRemoveAddress() {
+
+
+            UUID userId = UUID.randomUUID();
+            String password = "senha123";
+            String email = "gustavosdanieel@hotmail.com";
+
+            Long addressId = 1L;
+            String houseNumber = "1122";
+            String complement = "RUA PERTO DOS DEVS";
+            String zipCode = "11222333";
+            String street = "Rua dos dev 1000";
+            String bairro = "Bairro dos dev";
+            String cidade = "Devolandia";
+            String estado = "DV";
+            String pais = "Pais do desenvolvimento";
+
+            Address address = new Address(
+                    houseNumber, complement, zipCode, street, bairro, cidade, estado, pais
+            );
+            ReflectionTestUtils.setField(address, "id", addressId);
+
+            User user = new User("Gustavo", password, email);
+            ReflectionTestUtils.setField(user, "id", userId);
+
+            user.getAddresses().add(address);
+            address.setUser(user);
+
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+            when(userRepository.save(any(User.class))).thenReturn(user);
+
+            addressService.deleteAddress(userId, addressId);
+
+            assertTrue(user.getAddresses().isEmpty());
+
+            verify(userRepository).findById(userId);
+            verify(userRepository).save(user);
+
+        }
     }
 }

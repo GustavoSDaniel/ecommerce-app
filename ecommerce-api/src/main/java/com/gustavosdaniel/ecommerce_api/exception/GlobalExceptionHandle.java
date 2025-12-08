@@ -1,5 +1,6 @@
 package com.gustavosdaniel.ecommerce_api.exception;
 
+import com.gustavosdaniel.ecommerce_api.address.AddressNotFoundException;
 import com.gustavosdaniel.ecommerce_api.category.CategoryNotFoundException;
 import com.gustavosdaniel.ecommerce_api.category.NameCategoryExistException;
 import com.gustavosdaniel.ecommerce_api.order.*;
@@ -277,6 +278,22 @@ public class GlobalExceptionHandle {
         ErrorResponse error = new ErrorResponse(
                 "Pedido não encontrado",
                 "O pedido informado não existe",
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+
+    }
+
+    @ExceptionHandler(AddressNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleAddressNotFoundException(AddressNotFoundException ex) {
+
+        log.info("Address não encontrado {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse(
+                "Address não encontrado",
+                "O address informado não foi encontrado",
                 LocalDateTime.now(),
                 null
         );

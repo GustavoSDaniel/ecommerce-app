@@ -6,4 +6,6 @@ import java.util.UUID;
 public interface AddressService {
 
     AddressResponse createAddress(UUID userId, AddressRequest address);
+
+    void deleteAddress(UUID userId, Long addressId);
 }

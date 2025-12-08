@@ -9,6 +9,8 @@ import com.gustavosdaniel.ecommerce_api.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -88,5 +90,13 @@ public class OrderServiceImpl implements OrderService {
         log.info("Retornando order com ID: {}", orderId);
 
         return orderMapper.toOrderResponse(order);
+    }
+
+    @Override
+    public Page<OrderUserResponse> getOrdersByUserId(UUID userId, Pageable pageable) {
+
+
+
+        return null;
     }
 }

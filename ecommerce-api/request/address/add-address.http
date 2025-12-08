@@ -1,0 +1,16 @@
+### POST adiciona endereço no user
+
+POST http://localhost:5050/api/v1/api/v1/addresses
+Authorization: Bearer <SEU_TOKEN_AQUI>
+Content-Type: application/json
+
+{
+  "houseNumber": "100",
+  "complement": "Apto 202 Bloco B",
+  "zipCode": "12345-678",
+  "street": "Avenida Paulista",
+  "bairro": "Bela Vista",
+  "city": "São Paulo",
+  "state": "SP",
+  "country": "Brasil"
+}
