@@ -163,6 +163,24 @@ public class OrderController {
         return order.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @PatchMapping("/{id}/ship")
+    @Operation(summary = "Marca pedido como enviado")
+    public ResponseEntity<Void> shippedOrder(@PathVariable("id") UUID id) {
+
+        orderService.shippedOrder(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/deliver")
+    @Operation(summary = "Marca pedido como entregue")
+    public ResponseEntity<Void> deliveredOrder(@PathVariable("id") UUID id) {
+
+        orderService.deliveredOrder(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("canceled/{id}")
     @Operation(summary = "Cancela Pedido")
     public ResponseEntity<Void> cancelOrder(@PathVariable("id") UUID id, Authentication authentication)

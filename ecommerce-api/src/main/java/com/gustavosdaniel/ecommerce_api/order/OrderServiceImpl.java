@@ -192,6 +192,38 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    public void shippedOrder(UUID orderId) {
+
+        log.info("Atualizando status para SHIPPED. Pedido: {}", orderId);
+
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+
+        order.shipOrder();
+
+        orderRepository.save(order);
+
+        log.info("Pedido {} enviado com sucesso.", orderId);
+    }
+
+    @Override
+    @Transactional
+    public void deliveredOrder(UUID orderId) {
+
+        log.info("Atualizando status para DELIVERED. Pedido: {}", orderId);
+
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+
+        order.deliverOrder();
+
+        orderRepository.save(order);
+
+        log.info("Pedido {} entregue com sucesso.", orderId);
+
+    }
+
+
+    @Override
+    @Transactional
     public void cancelarOrder(UUID orderId, UUID userId)
             throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException {
 

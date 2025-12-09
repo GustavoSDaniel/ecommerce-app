@@ -392,6 +392,51 @@ class OrderServiceImplTest {
         }
     }
 
+    @Nested
+    @DisplayName("Should status for shipped with sucesso")
+    class ShouldStatusForShippedWithSucesso {
+
+        @Test
+        void shouldStatusForShippedWithSucesso() {
+
+            UUID orderId = UUID.randomUUID();
+
+            Order order = new Order();
+            ReflectionTestUtils.setField(order, "id", orderId);
+            ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.PAID);
+
+            when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+            orderService.shippedOrder(orderId);
+
+            assertEquals(OrderStatus.SHIPPED, order.getOrderStatus());
+
+            verify(orderRepository).findById(orderId);
+        }
+    }
+
+    @Nested
+    @DisplayName("Should status for delivered with sucesso")
+    class ShouldStatusForDeliveredWithSucesso {
+
+        @Test
+        void shouldStatusForDeliveredWithSucesso() {
+
+            UUID orderId = UUID.randomUUID();
+
+            Order order = new Order();
+            ReflectionTestUtils.setField(order, "id", orderId);
+            ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.SHIPPED);
+
+            when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+            orderService.deliveredOrder(orderId);
+
+            assertEquals(OrderStatus.DELIVERED, order.getOrderStatus());
+
+            verify(orderRepository).findById(orderId);
+        }
+    }
 
 
 }

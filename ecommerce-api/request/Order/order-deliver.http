@@ -1,0 +1,5 @@
+### PATCH marca o pedido como entregue
+
+PATCH http://localhost:5050/api/v1/orders/{ID DO PEDIDO}/deliver
+Authorization: Bearer <SEU_TOKEN_AQUI>
+
