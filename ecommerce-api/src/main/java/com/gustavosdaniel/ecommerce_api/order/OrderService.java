@@ -1,11 +1,12 @@
 package com.gustavosdaniel.ecommerce_api.order;
 
+import com.gustavosdaniel.ecommerce_api.payment.PaymentRequest;
+import com.gustavosdaniel.ecommerce_api.payment.PaymentResponse;
 import com.gustavosdaniel.ecommerce_api.product.InsuficienteStockException;
 import com.gustavosdaniel.ecommerce_api.product.StockOperationExceptionAddAndRemove;
 import com.gustavosdaniel.ecommerce_api.product.StockOperationExceptionSet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -27,14 +28,13 @@ public interface OrderService {
 
     Optional<OrderResponse> searchOrdersByReference(UUID userId, String reference);
 
+    void confirmPayment(UUID orderId, PaymentRequest paymentRequest);
+
     void shippedOrder(UUID orderId);
 
     void deliveredOrder(UUID orderId);
 
-    void cancelarOrder(UUID orderId, UUID userId)
+    void cancelOrder(UUID orderId, UUID userId)
             throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException;
-
-
-
 
 }

@@ -4,6 +4,7 @@ import com.gustavosdaniel.ecommerce_api.address.AddressNotFoundException;
 import com.gustavosdaniel.ecommerce_api.category.CategoryNotFoundException;
 import com.gustavosdaniel.ecommerce_api.category.NameCategoryExistException;
 import com.gustavosdaniel.ecommerce_api.order.*;
+import com.gustavosdaniel.ecommerce_api.payment.*;
 import com.gustavosdaniel.ecommerce_api.product.*;
 import com.gustavosdaniel.ecommerce_api.user.*;
 import org.slf4j.Logger;
@@ -315,5 +316,73 @@ public class GlobalExceptionHandle {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(PaymentStatusProcessingException.class)
+    public ResponseEntity<ErrorResponse> handlePaymentStatusProcessingException(PaymentStatusProcessingException ex){
 
+        log.info("Erro ao processar o pagamento {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse(
+                "Erro de processamento",
+                "Houve um erro ao processar o pagamento",
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+
+    }
+
+    @ExceptionHandler(PaymentStatusCompleteException.class)
+    public ResponseEntity<ErrorResponse> handlePaymentStatusCompleteException(PaymentStatusCompleteException ex){
+
+        log.info("Erro ao completar o pagamento {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse(
+                "Erro ao completar o pagamento",
+                "Houve um erro no momento de completar o pagamento",
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(PaymentStatusFailedException.class)
+    public ResponseEntity<ErrorResponse> handlePaymentStatusFailedException(PaymentStatusFailedException ex){
+
+        log.info("O pagamento falhou {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("Pagamento falhou",
+                "Falha no momento de concluir o pagamento",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(PaymentStatusCancelledException.class)
+    public ResponseEntity<ErrorResponse> handlePaymentStatusCancelledException(PaymentStatusCancelledException ex){
+
+        log.info("Error ao cancelar o pagamento {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("Erro de cancelamento",
+                "Erro ao cancelar o pedido ou pagamento",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(PaymentValueInsuficienteException.class)
+    public ResponseEntity<ErrorResponse>handlePaymentValueInsuficienteException(PaymentValueInsuficienteException ex){
+
+        log.info("Valor insuficiente {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse("Valor insuficiente",
+                "Não foi possivel realizar o pagamento pois o valor é insuficiente",
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }

@@ -1,0 +1,4 @@
+### PATCH marca o pedido como pagamento confirmado
+
+PATCH http://localhost:5050/api/v1/orders/{ID DO PEDIDO}/confirmPayment
+Authorization: Bearer <SEU_TOKEN_AQUI>

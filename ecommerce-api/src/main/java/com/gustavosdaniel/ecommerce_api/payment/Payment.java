@@ -2,6 +2,7 @@ package com.gustavosdaniel.ecommerce_api.payment;
 
 import com.gustavosdaniel.ecommerce_api.notification.Notification;
 import com.gustavosdaniel.ecommerce_api.order.Order;
+import com.gustavosdaniel.ecommerce_api.util.AuditableBase;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,7 +14,9 @@ import java.util.*;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Payment {
+public class Payment extends AuditableBase {
+
+    public Payment() {}
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -27,11 +30,17 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PaymentStatus status;
+    private PaymentStatus status = PaymentStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentMethod paymentMethod;
+
+    @Column(name = "confirmed_at")
+    private LocalDateTime confirmedAt;
+
+    @Column(name = "failure_reason", length = 500)
+    private String failureReason;
 
     @OneToMany(mappedBy = "payment",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
@@ -41,13 +50,43 @@ public class Payment {
     @OneToOne(mappedBy = "payment", cascade = CascadeType.PERSIST)
     private Order order;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    public void processPayment() {
 
-    @LastModifiedDate
-    @Column(name = "updated_at", insertable = false)
-    private LocalDateTime updatedAt;
+        if (this.status != PaymentStatus.PENDING) {
+            throw new PaymentStatusProcessingException();
+        }
+
+        this.status = PaymentStatus.PROCESSING;
+    }
+
+    public void completePayment() {
+
+        if (this.status != PaymentStatus.PROCESSING) {
+            throw new PaymentStatusCompleteException();
+        }
+
+        this.status = PaymentStatus.COMPLETED;
+        this.confirmedAt = LocalDateTime.now();
+    }
+
+    public void failPayment(String reason) {
+
+        if (this.status != PaymentStatus.COMPLETED) {
+            throw new PaymentStatusFailedException();
+        }
+        this.status = PaymentStatus.FAILED;
+        this.failureReason = reason;
+    }
+
+    public void cancelPayment() {
+
+        if (this.status == PaymentStatus.COMPLETED || this.status == PaymentStatus.PROCESSING) {
+
+            throw new PaymentStatusCancelledException();
+
+        }
+        this.status = PaymentStatus.CANCELLED;
+    }
 
     public UUID getId() {
         return id;
@@ -73,16 +112,20 @@ public class Payment {
         return status;
     }
 
-    public void setStatus(PaymentStatus status) {
-        this.status = status;
-    }
-
     public PaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
 
     public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public LocalDateTime getConfirmedAt() {
+        return confirmedAt;
+    }
+
+    public String getFailureReason() {
+        return failureReason;
     }
 
     public List<Notification> getNotifications() {
@@ -99,18 +142,6 @@ public class Payment {
 
     public void setOrder(Order order) {
         this.order = order;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override

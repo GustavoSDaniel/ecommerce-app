@@ -1,7 +1,7 @@
 package com.gustavosdaniel.ecommerce_api.order;
 
-import com.auth0.jwt.JWT;
 import com.gustavosdaniel.ecommerce_api.config.UserAuthorizationRole;
+import com.gustavosdaniel.ecommerce_api.payment.PaymentRequest;
 import com.gustavosdaniel.ecommerce_api.product.InsuficienteStockException;
 import com.gustavosdaniel.ecommerce_api.product.StockOperationExceptionAddAndRemove;
 import com.gustavosdaniel.ecommerce_api.product.StockOperationExceptionSet;
@@ -15,13 +15,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -163,6 +160,15 @@ public class OrderController {
         return order.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @PatchMapping("/{id}/confirmPayment")
+    @Operation(summary = "Marca pedido com pagamento confirmado")
+    public ResponseEntity<Void> confirmOrderPayment(@PathVariable("id") UUID id, @RequestBody @Valid  PaymentRequest paymentRequest) {
+
+        orderService.confirmPayment(id, paymentRequest);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/{id}/ship")
     @Operation(summary = "Marca pedido como enviado")
     public ResponseEntity<Void> shippedOrder(@PathVariable("id") UUID id) {
@@ -190,7 +196,7 @@ public class OrderController {
 
         UUID userId = jwtUser.UserId();
 
-        orderService.cancelarOrder(id, userId);
+        orderService.cancelOrder(id, userId);
 
         return ResponseEntity.ok().build();
     }

@@ -2,6 +2,7 @@ package com.gustavosdaniel.ecommerce_api.order;
 
 import com.gustavosdaniel.ecommerce_api.orderItem.OrderItem;
 import com.gustavosdaniel.ecommerce_api.orderItem.OrderItemRequest;
+import com.gustavosdaniel.ecommerce_api.payment.*;
 import com.gustavosdaniel.ecommerce_api.product.*;
 import com.gustavosdaniel.ecommerce_api.user.User;
 import com.gustavosdaniel.ecommerce_api.user.UserNotFoundException;
@@ -26,13 +27,17 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final PaymentMapper paymentMapper;
+    private final PaymentRepository paymentRepository;
     private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, UserRepository userRepository, ProductRepository productRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, UserRepository userRepository, ProductRepository productRepository, PaymentMapper paymentMapper, PaymentRepository paymentRepository) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.paymentMapper = paymentMapper;
+        this.paymentRepository = paymentRepository;
     }
 
 
@@ -192,6 +197,34 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    public void confirmPayment(UUID orderId, PaymentRequest paymentRequest) {
+
+        log.info("Confirmando o pagamento do pedido {}", orderId);
+
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+
+        Payment payment = paymentMapper.toPayment(paymentRequest);
+
+        payment.processPayment();
+
+        if (paymentRequest.amount().compareTo(order.getTotalAmount()) < 0) {
+
+            throw new PaymentValueInsuficienteException();
+        }
+
+        payment.completePayment();
+
+        order.confirmPayment(payment);
+
+        paymentRepository.save(payment);
+
+        orderRepository.save(order);
+
+        log.info("Pedido {} pago com sucesso ", orderId);
+    }
+
+    @Override
+    @Transactional
     public void shippedOrder(UUID orderId) {
 
         log.info("Atualizando status para SHIPPED. Pedido: {}", orderId);
@@ -224,7 +257,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void cancelarOrder(UUID orderId, UUID userId)
+    public void cancelOrder(UUID orderId, UUID userId)
             throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException {
 
         log.info("Tentativa de cancelamento do pedido {} pelo usuário {}", orderId, userId);

@@ -2,6 +2,7 @@ package com.gustavosdaniel.ecommerce_api.order;
 
 import com.gustavosdaniel.ecommerce_api.orderItem.OrderItem;
 import com.gustavosdaniel.ecommerce_api.orderItem.OrderItemRequest;
+import com.gustavosdaniel.ecommerce_api.payment.*;
 import com.gustavosdaniel.ecommerce_api.product.*;
 import com.gustavosdaniel.ecommerce_api.user.User;
 import com.gustavosdaniel.ecommerce_api.user.UserRepository;
@@ -37,6 +38,12 @@ class OrderServiceImplTest {
 
     @Mock
     private OrderMapper orderMapper;
+
+    @Mock
+    private PaymentRepository paymentRepository;
+
+    @Mock
+    private PaymentMapper paymentMapper;
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -386,9 +393,52 @@ class OrderServiceImplTest {
 
             when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
 
-           orderService.cancelarOrder(orderId, userId);
+           orderService.cancelOrder(orderId, userId);
 
            assertEquals(OrderStatus.CANCELLED, order.getOrderStatus());
+        }
+    }
+
+    @Nested
+    @DisplayName("Should status for confirmad payment to order")
+    class ShouldStatusForConfirmadPaymentToOrder {
+
+        @Test
+        void shouldStatusForConfirmadPaymentToOrder() {
+
+            UUID orderId = UUID.randomUUID();
+            Long productId = 1L;
+
+            Product product = new Product("Maquita", "Maquita eletrica", MeasureUnit.UNIDADE,
+                    BigDecimal.valueOf(5), BigDecimal.valueOf(40.00));
+            ReflectionTestUtils.setField(product, "id", productId);
+
+            OrderItem orderItem = new OrderItem();
+
+            List<OrderItem> orderItems = Arrays.asList(orderItem);
+
+            Order order = new Order();
+            ReflectionTestUtils.setField(order, "id", orderId);
+            ReflectionTestUtils.setField(order, "orderStatus", OrderStatus.CREATED);
+            ReflectionTestUtils.setField(order, "totalAmount", BigDecimal.valueOf(100.00));
+            ReflectionTestUtils.setField(order, "orderItems", List.of(orderItems));
+
+            PaymentDetails details = new PixDetails("Gustavo", "55664488");
+
+            PaymentRequest request =new PaymentRequest(BigDecimal.valueOf(120.00), details);
+
+            Payment payment = new Payment();
+            payment.setAmount(BigDecimal.valueOf(120.00));
+            payment.setPaymentMethod(PaymentMethod.PIX);
+
+            when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+            when(paymentMapper.toPayment(request)).thenReturn(payment);
+
+            orderService.confirmPayment(orderId, request);
+
+            assertEquals(OrderStatus.PAID, order.getOrderStatus());
+
+            verify(orderRepository).findById(orderId);
         }
     }
 
