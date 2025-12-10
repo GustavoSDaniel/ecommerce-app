@@ -1,0 +1,4 @@
+### GET retorna a pagamento do usuario pelo id do pedido
+
+GET http://localhost:5050/api/v1/payments/by-order/{ID DA ORDER}
+

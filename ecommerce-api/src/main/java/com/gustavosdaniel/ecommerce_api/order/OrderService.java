@@ -28,7 +28,7 @@ public interface OrderService {
 
     Optional<OrderResponse> searchOrdersByReference(UUID userId, String reference);
 
-    void confirmPayment(UUID orderId, PaymentRequest paymentRequest);
+    PaymentResponse confirmPayment(UUID orderId, PaymentRequest paymentRequest);
 
     void shippedOrder(UUID orderId);
 

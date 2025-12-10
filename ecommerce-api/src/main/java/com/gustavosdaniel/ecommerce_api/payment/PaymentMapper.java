@@ -3,6 +3,8 @@ package com.gustavosdaniel.ecommerce_api.payment;
 import org.springframework.stereotype.Component;
 
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Component
@@ -45,5 +47,29 @@ public class PaymentMapper {
         }
 
         return payment;
+    }
+
+    public PaymentResponse toPaymentResponse(Payment payment) {
+
+        if (payment == null) {
+            return null;
+        }
+
+        return new PaymentResponse(
+
+                payment.getId(),
+                payment.getReference(),
+                payment.getAmount(),
+                payment.getPaymentMethod(),
+                payment.getStatus(),
+                payment.getConfirmedAt(),
+                payment.getFailureReason(),
+                payment.getOrder() != null ? payment.getOrder().getId() : null,
+                payment.getReference(),
+                payment.getCreatedAt(),
+                payment.getUpdatedAt()
+
+        );
+
     }
 }

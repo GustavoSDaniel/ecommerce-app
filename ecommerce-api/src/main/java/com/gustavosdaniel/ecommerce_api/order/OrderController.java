@@ -2,6 +2,7 @@ package com.gustavosdaniel.ecommerce_api.order;
 
 import com.gustavosdaniel.ecommerce_api.config.UserAuthorizationRole;
 import com.gustavosdaniel.ecommerce_api.payment.PaymentRequest;
+import com.gustavosdaniel.ecommerce_api.payment.PaymentResponse;
 import com.gustavosdaniel.ecommerce_api.product.InsuficienteStockException;
 import com.gustavosdaniel.ecommerce_api.product.StockOperationExceptionAddAndRemove;
 import com.gustavosdaniel.ecommerce_api.product.StockOperationExceptionSet;
@@ -162,11 +163,12 @@ public class OrderController {
 
     @PatchMapping("/{id}/confirmPayment")
     @Operation(summary = "Marca pedido com pagamento confirmado")
-    public ResponseEntity<Void> confirmOrderPayment(@PathVariable("id") UUID id, @RequestBody @Valid  PaymentRequest paymentRequest) {
+    public ResponseEntity<PaymentResponse> confirmOrderPayment(
+            @PathVariable("id") UUID id, @RequestBody @Valid  PaymentRequest paymentRequest) {
 
-        orderService.confirmPayment(id, paymentRequest);
+        PaymentResponse paymentResponse = orderService.confirmPayment(id, paymentRequest);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(paymentResponse);
     }
 
     @PatchMapping("/{id}/ship")

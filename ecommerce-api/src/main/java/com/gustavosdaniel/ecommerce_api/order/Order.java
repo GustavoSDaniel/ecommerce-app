@@ -158,9 +158,6 @@ public class Order extends AuditableBase {
         }
 
         this.payment = payment;
-        this.payment.setOrder(this);
-
-
         this.orderStatus = OrderStatus.PAID;
     }
 

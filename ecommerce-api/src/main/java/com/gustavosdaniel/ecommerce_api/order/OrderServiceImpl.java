@@ -27,17 +27,17 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final PaymentService paymentService;
     private final PaymentMapper paymentMapper;
-    private final PaymentRepository paymentRepository;
     private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, UserRepository userRepository, ProductRepository productRepository, PaymentMapper paymentMapper, PaymentRepository paymentRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, UserRepository userRepository, ProductRepository productRepository, PaymentService paymentService, PaymentMapper paymentMapper) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.paymentService = paymentService;
         this.paymentMapper = paymentMapper;
-        this.paymentRepository = paymentRepository;
     }
 
 
@@ -197,30 +197,34 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void confirmPayment(UUID orderId, PaymentRequest paymentRequest) {
+    public PaymentResponse confirmPayment(UUID orderId, PaymentRequest paymentRequest) {
 
         log.info("Confirmando o pagamento do pedido {}", orderId);
 
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
 
-        Payment payment = paymentMapper.toPayment(paymentRequest);
+        if (order.getPayment() != null && order.getPayment().getStatus() == PaymentStatus.COMPLETED){
 
-        payment.processPayment();
-
-        if (paymentRequest.amount().compareTo(order.getTotalAmount()) < 0) {
-
-            throw new PaymentValueInsuficienteException();
+            throw new IllegalStateException("Pedido já foi pago");
         }
 
-        payment.completePayment();
+        Payment payment = paymentService.processPayment(order, paymentRequest);
 
-        order.confirmPayment(payment);
+        if (payment.getStatus() == PaymentStatus.COMPLETED) {
 
-        paymentRepository.save(payment);
+            order.confirmPayment(payment);
 
-        orderRepository.save(order);
+            orderRepository.save(order);
 
-        log.info("Pedido {} pago com sucesso ", orderId);
+            log.info("O pagamento foi com sucesso pago {}", orderId);
+
+            return paymentMapper.toPaymentResponse(payment);
+
+        } else {
+
+            throw new PaymentStatusFailedException();
+        }
+
     }
 
     @Override

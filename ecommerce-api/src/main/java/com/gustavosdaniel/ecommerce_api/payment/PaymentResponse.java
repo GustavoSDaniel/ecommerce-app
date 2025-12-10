@@ -13,6 +13,9 @@ public record PaymentResponse (
        PaymentStatus status,
        LocalDateTime confirmedAt,
        String failureReason,
-       UUID orderId
+       UUID orderId,
+       String orderReference,
+       LocalDateTime createdAt,
+       LocalDateTime updatedAt
 ) {
 }
