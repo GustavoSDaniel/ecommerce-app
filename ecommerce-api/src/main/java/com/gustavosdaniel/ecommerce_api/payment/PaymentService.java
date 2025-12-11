@@ -17,4 +17,6 @@ public interface PaymentService {
     Optional<PaymentResponse> getPaymentById(UUID id);
 
     Optional<PaymentResponse>  getPaymentByOrderId(UUID orderId, UUID userId);
+
+    void cancelPayment(UUID paymentId, UUID userId);
 }

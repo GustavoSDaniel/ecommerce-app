@@ -3,6 +3,7 @@ package com.gustavosdaniel.ecommerce_api.payment;
 import com.gustavosdaniel.ecommerce_api.order.Order;
 
 import com.gustavosdaniel.ecommerce_api.order.OrderRepository;
+import com.gustavosdaniel.ecommerce_api.order.OrderStatus;
 import com.gustavosdaniel.ecommerce_api.user.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -199,8 +200,43 @@ class PaymentServiceImplTest {
 
 
         }
+    }
+
+    @Nested
+    @DisplayName("Should cancel payment with sucesso")
+    class ShouldCancelPaymentWithSucesso {
+
+        @Test
+        void shouldCancelPaymentWithSucesso() {
+
+            UUID paymentId = UUID.randomUUID();
+            UUID userId = UUID.randomUUID();
+            UUID orderId = UUID.randomUUID();
+
+            User user = new User();
+            ReflectionTestUtils.setField(user, "id", userId);
+
+            Order order = new Order();
+            ReflectionTestUtils.setField(order, "id", orderId);
+            order.setUser(user);
+
+            Payment payment = new Payment();
+            ReflectionTestUtils.setField(payment, "id", paymentId);
+            payment.setOrder(order);
+
+            when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
+
+            paymentService.cancelPayment(paymentId, userId);
+
+            assertEquals(PaymentStatus.CANCELLED, payment.getStatus());
+            assertEquals(OrderStatus.CANCELLED, order.getOrderStatus());
+
+            verify(paymentRepository).findById(paymentId);
+            verify(paymentRepository).save(payment);
 
 
+
+        }
     }
 
 

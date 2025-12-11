@@ -10,10 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -72,5 +69,18 @@ public class PaymentController {
         Optional<PaymentResponse>  payment = paymentService.getPaymentByOrderId(orderId, userId);
 
         return payment.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}/cancel")
+    @Operation(summary = "Cancelando o pagamento")
+    public ResponseEntity<Void> cancelPayment(@PathVariable("id") UUID id, Authentication authentication) {
+
+        JWTUser jwtUser = (JWTUser) authentication.getPrincipal();
+
+        UUID userId = jwtUser.UserId();
+
+        paymentService.cancelPayment(id, userId);
+
+        return ResponseEntity.noContent().build();
     }
 }

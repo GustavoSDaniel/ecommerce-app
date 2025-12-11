@@ -385,4 +385,19 @@ public class GlobalExceptionHandle {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(PaymentNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePaymentNotFoundException(PaymentNotFoundException ex){
+
+        log.info("Payment não encontrado {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse(
+                "Pagamento não encontrado",
+                "O pagamento buscado não encontrado",
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }

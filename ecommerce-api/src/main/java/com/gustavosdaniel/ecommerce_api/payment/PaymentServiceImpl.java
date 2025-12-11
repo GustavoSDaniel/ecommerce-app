@@ -6,6 +6,7 @@ import com.gustavosdaniel.ecommerce_api.order.OrderNotFoundException;
 import com.gustavosdaniel.ecommerce_api.order.OrderRepository;
 import com.gustavosdaniel.ecommerce_api.user.User;
 import com.gustavosdaniel.ecommerce_api.user.UserNotAuthorizationException;
+import com.gustavosdaniel.ecommerce_api.user.UserNotFoundException;
 import com.gustavosdaniel.ecommerce_api.user.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,5 +128,29 @@ public class PaymentServiceImpl implements PaymentService {
         log.info("Payment encontrado para a order {}", orderId);
 
         return payment.map(paymentMapper::toPaymentResponse);
+    }
+
+    @Override
+    @jakarta.transaction.Transactional
+    public void cancelPayment(UUID paymentId, UUID userId) {
+
+        log.info("Cancelando pagamento {}", paymentId);
+
+        Payment payment = paymentRepository.findById(paymentId).orElseThrow(PaymentNotFoundException::new);
+
+        if (!payment.getOrder().getUser().getId().equals(userId)) {
+
+            throw new UserNotAuthorizationException();
+        }
+
+        payment.cancelPayment();
+
+        Order order = payment.getOrder();
+
+        order.cancelOrder();
+
+        paymentRepository.save(payment);
+
+        log.info("Pagamento cancelado com sucesso {}", paymentId);
     }
 }
