@@ -1,0 +1,4 @@
+### GET retorna todos os pagamentos daquele usuario
+
+GET http://localhost:5050/api/v1/payments/user/{ID DO USUARIO}
+Authorization: Bearer <SEU_TOKEN_AQUI>

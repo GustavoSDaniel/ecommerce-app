@@ -11,6 +11,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.mockito.Mockito.verify;
@@ -18,8 +22,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -142,6 +145,62 @@ class PaymentServiceImplTest {
             verify(paymentMapper).toPaymentResponse(payment);
 
         }
+    }
+
+    @Nested
+    @DisplayName("Should pyments for userId with sucesso")
+    class ShouldPayPaymentForUserIdWithSucesso {
+
+        @Test
+        void shouldPayPaymentForUserIdWithSucesso() {
+
+            UUID userId = UUID.randomUUID();
+            UUID orderId = UUID.randomUUID();
+            UUID paymentId = UUID.randomUUID();
+
+            Pageable pageable = PageRequest.of(0, 10);
+
+
+
+            Payment payment = new Payment();
+            ReflectionTestUtils.setField(payment, "id", paymentId);
+
+            List<Payment> payments = Arrays.asList(payment);
+
+            Page<Payment> paymentPage = new PageImpl(payments);
+
+            PaymentResponse response = new PaymentResponse(
+
+                    UUID.randomUUID(),
+                    "COMPLETED",
+                    BigDecimal.valueOf(120.00),
+                    PaymentMethod.PIX,
+                    PaymentStatus.COMPLETED,
+                    LocalDateTime.now(),
+                    "Não falhou",
+                    orderId,
+                    "referencia do gateway",
+                    LocalDateTime.now(),
+                    LocalDateTime.now()
+            );
+
+            when(paymentMapper.toPaymentResponse(payment)).thenReturn(response);
+            when(paymentRepository.findByUserId(userId, pageable)).thenReturn(paymentPage);
+
+            Page<PaymentResponse>  output = paymentService.getPaymentByUserId(userId, pageable);
+
+            assertNotNull(output);
+            assertFalse(output.isEmpty());
+            assertEquals(1, output.getTotalElements());
+            assertEquals(response, output.getContent().get(0));
+
+            verify(paymentRepository).findByUserId(userId, pageable);
+            verify(paymentMapper).toPaymentResponse(payment);
+
+
+        }
+
+
     }
 
 

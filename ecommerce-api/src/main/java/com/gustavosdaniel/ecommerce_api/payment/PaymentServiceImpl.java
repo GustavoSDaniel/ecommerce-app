@@ -4,9 +4,13 @@ import com.gustavosdaniel.ecommerce_api.order.Order;
 import com.gustavosdaniel.ecommerce_api.order.OrderMapper;
 import com.gustavosdaniel.ecommerce_api.order.OrderNotFoundException;
 import com.gustavosdaniel.ecommerce_api.order.OrderRepository;
+import com.gustavosdaniel.ecommerce_api.user.User;
 import com.gustavosdaniel.ecommerce_api.user.UserNotAuthorizationException;
+import com.gustavosdaniel.ecommerce_api.user.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +25,15 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
     private static final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
-    private final OrderMapper orderMapper;
 
-    public PaymentServiceImpl(PaymentGatewaySimulateService paymentGatewaySimulateService, PaymentRepository paymentRepository, PaymentMapper paymentMapper, OrderRepository orderRepository, OrderMapper orderMapper) {
+    public PaymentServiceImpl(PaymentGatewaySimulateService paymentGatewaySimulateService, PaymentRepository paymentRepository, PaymentMapper paymentMapper, OrderRepository orderRepository, UserRepository userRepository) {
         this.paymentGatewaySimulateService = paymentGatewaySimulateService;
         this.paymentRepository = paymentRepository;
         this.paymentMapper = paymentMapper;
         this.orderRepository = orderRepository;
-        this.orderMapper = orderMapper;
+        this.userRepository = userRepository;
     }
 
 
@@ -63,6 +67,26 @@ public class PaymentServiceImpl implements PaymentService {
             log.warn("Pagamento recusado para o pedido {}", order.getId());        }
 
         return paymentRepository.save(savedPayment);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PaymentResponse> getPaymentByUserId(UUID userId, Pageable pageable) {
+
+        log.info("Buscando lista de pagamento do user {}", userId);
+
+        Page<Payment> payments = paymentRepository.findByUserId(userId, pageable);
+
+        if(payments.isEmpty()){
+
+            log.info("Nenhum pagamento foi encontrado para esse usuario");
+
+            return Page.empty();
+        }
+
+        log.info("Retornado lista de pagamentos do user {}", payments.getNumberOfElements());
+
+        return payments.map(paymentMapper::toPaymentResponse);
     }
 
     @Override

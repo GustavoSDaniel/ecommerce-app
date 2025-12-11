@@ -3,6 +3,11 @@ package com.gustavosdaniel.ecommerce_api.payment;
 import com.gustavosdaniel.ecommerce_api.config.UserAuthorizationRole;
 import com.gustavosdaniel.ecommerce_api.user.JWTUser;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +37,24 @@ public class PaymentController {
         Optional<PaymentResponse> payment = paymentService.getPaymentById(id);
 
         return payment.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/user/{userId}")
+    @Operation(summary = "Busca pagamento do usuario")
+    public ResponseEntity<Page<PaymentResponse>> getPaymentByUser(
+
+            @PathVariable("userId")
+            UUID userId,
+            Authentication authentication,
+            @ParameterObject()
+            @PageableDefault(sort = "confirmedAt", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+
+        userAuthorizationRole.validateUserRole(userId, authentication);
+
+        Page<PaymentResponse> payments = paymentService.getPaymentByUserId(userId, pageable);
+
+        return ResponseEntity.ok(payments);
     }
 
     @GetMapping("/by-order/{orderId}")

@@ -21,3 +21,5 @@ CREATE TABLE orders (
                             FOREIGN KEY (payment_id)
                                 REFERENCES payment (id)
 );
+
+CREATE INDEX idx_order_user_id ON tb_orders (user_id);
