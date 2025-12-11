@@ -102,5 +102,47 @@ class PaymentServiceImplTest {
         }
     }
 
+    @Nested
+    @DisplayName("Should payment by id with sucesso")
+    class ShouldPayPaymentByIdWithSucesso {
+
+        @Test
+        void shouldPayPaymentByIdWithSucesso() {
+
+            UUID paymentId = UUID.randomUUID();
+            UUID orderId = UUID.randomUUID();
+
+            Payment payment = new Payment();
+            ReflectionTestUtils.setField(payment, "id", paymentId);
+
+            PaymentResponse response = new PaymentResponse(
+
+                    UUID.randomUUID(),
+                    "COMPLETED",
+                    BigDecimal.valueOf(120.00),
+                    PaymentMethod.PIX,
+                    PaymentStatus.COMPLETED,
+                    LocalDateTime.now(),
+                    "Não falhou",
+                    orderId,
+                    "referencia do gateway",
+                    LocalDateTime.now(),
+                    LocalDateTime.now()
+            );
+
+            when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
+            when(paymentMapper.toPaymentResponse(payment)).thenReturn(response);
+
+            Optional<PaymentResponse> output = paymentService.getPaymentById(paymentId);
+
+            assertNotNull(output);
+            assertEquals(response, output.get());
+
+            verify(paymentRepository).findById(paymentId);
+            verify(paymentMapper).toPaymentResponse(payment);
+
+        }
+    }
+
 
 }

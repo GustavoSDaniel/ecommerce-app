@@ -25,6 +25,15 @@ public class PaymentController {
         this.userAuthorizationRole = userAuthorizationRole;
     }
 
+    @GetMapping("by-id")
+    @Operation(summary = "Busca o pagamento pelo ID")
+    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable("id") UUID id) {
+
+        Optional<PaymentResponse> payment = paymentService.getPaymentById(id);
+
+        return payment.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/by-order/{orderId}")
     @Operation(summary = "Busca pagamento através do ID do pedido")
     public ResponseEntity<PaymentResponse> getPayment(

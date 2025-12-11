@@ -116,6 +116,7 @@ public class SecurityConfig {
 
                                 //Payment
                                 .requestMatchers(HttpMethod.GET, "/api/v1/payments/by-order/**").hasAnyRole("ADMIN", "CUSTOMER")
+                                .requestMatchers(HttpMethod.GET, "api/v1/payments/by-id/**").hasRole("ADMIN")
 
 
                                 .anyRequest().authenticated())

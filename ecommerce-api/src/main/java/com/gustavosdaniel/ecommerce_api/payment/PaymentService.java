@@ -10,5 +10,7 @@ public interface PaymentService {
 
     Payment processPayment(Order order, PaymentRequest paymentRequest);
 
+    Optional<PaymentResponse> getPaymentById(UUID id);
+
     Optional<PaymentResponse>  getPaymentByOrderId(UUID orderId, UUID userId);
 }

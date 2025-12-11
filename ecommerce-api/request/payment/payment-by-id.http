@@ -1,0 +1,3 @@
+### GET retorna a pagamento pelo id
+
+GET http://localhost:5050/api/v1/payments/by-id/{ID DO PAGAMENTO}

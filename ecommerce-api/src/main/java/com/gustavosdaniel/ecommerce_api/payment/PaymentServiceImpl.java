@@ -67,6 +67,26 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<PaymentResponse> getPaymentById(UUID id) {
+
+        log.info("Buscando pagamento pelo id {}", id);
+
+        Optional<Payment> payment = paymentRepository.findById(id);
+
+        if (payment.isEmpty()) {
+
+            log.info("Nenhum pagamento com esse id {} foi encontrado", id);
+
+            return Optional.empty();
+        }
+
+        log.info("Retornando pagamento encontrado pelo id {}", id);
+
+        return payment.map(paymentMapper::toPaymentResponse);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<PaymentResponse> getPaymentByOrderId(UUID orderId, UUID userId) {
 
         log.info("Buscando pagamento do pedido {} para usuário {}", orderId, userId);
