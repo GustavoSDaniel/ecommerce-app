@@ -71,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
 
         log.info("Buscando todos os produtos ativos ");
 
-        Page<Product> products = productRepository.findActiveProducts(pageable);
+        Page<Product> products = productRepository.findByActiveTrue(pageable);
 
         log.info("Produtos buscados com sucesso {}", products.getTotalElements());
 

@@ -1,4 +1,54 @@
 ### PATCH marca o pedido como pagamento confirmado
 
-PATCH http://localhost:5050/api/v1/orders/{ID DO PEDIDO}/confirmPayment
+PATCH http://localhost:5050/api/v1/orders/{ID_DO_PEDIDO}/confirmPayment
 Authorization: Bearer <SEU_TOKEN_AQUI>
+Content-Type: application/json
+
+{
+  "amount": 150.00,
+  "details": {
+    "method": "PIX",
+    "payerName": "Gustavo Silva",
+    "payerDocument": "123.456.789-00"
+  }
+}
+
+
+
+# --- OUTROS EXEMPLOS (COMENTADOS) ---
+# Para usar um destes, descomente e comente o bloco do PIX acima
+
+# OPÇÃO BOLETO
+# {
+#   "amount": 89.90,
+#   "details": {
+#     "method": "BOLETO",
+#     "payerDocument": "59247623007",
+#     "address": "Av. Paulista, 1000 - São Paulo, SP",
+#     "dueDate": "2025-12-30"
+#   }
+# }
+
+# OPÇÃO CRÉDITO
+# {
+#   "amount": 2500.00,
+#   "details": {
+#     "method": "CREDIT_CARD",
+#     "cardNumber": "4111111111111111",
+#     "cardHolderName": "GUSTAVO DANIEL",
+#     "expiryDate": "12/29",
+#     "cvv": "123"
+#   }
+# }
+
+# OPÇÃO DÉBITO
+# {
+#   "amount": 50.00,
+#   "details": {
+#     "method": "DEBIT_CARD",
+#     "cardNumber": "4111111111111111",
+#     "cardHolderName": "GUSTAVO DANIEL",
+#     "expiryDate": "10/28",
+#     "cvv": "456"
+#   }
+# }

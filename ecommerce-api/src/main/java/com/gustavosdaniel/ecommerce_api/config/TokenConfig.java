@@ -15,10 +15,10 @@ import java.util.UUID;
 @Component
 public class TokenConfig {
 
-    @Value("${JWT_SECRET}")
+    @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${spring.jwt.expiration}")
+    @Value("${jwt.expiration}")
     private long expiration;
 
     public String generateToken(User user) {

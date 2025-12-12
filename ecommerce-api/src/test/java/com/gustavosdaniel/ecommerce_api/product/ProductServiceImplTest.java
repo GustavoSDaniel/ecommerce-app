@@ -229,7 +229,7 @@ class ProductServiceImplTest {
                     categoryName, productId2, "PC", "PC DA XUXA", MeasureUnit.UNIDADE,
                     BigDecimal.valueOf(10), BigDecimal.valueOf(300), "GUSTAVO");
 
-            when(productRepository.findActiveProducts(pageable)).thenReturn(productPage);
+            when(productRepository.findByActiveTrue(pageable)).thenReturn(productPage);
 
             when(productMapper.toProductResponse(product)).thenReturn(response);
             when(productMapper.toProductResponse(product1)).thenReturn(response1);

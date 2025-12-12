@@ -4,8 +4,7 @@ import com.gustavosdaniel.ecommerce_api.order.Order;
 import com.gustavosdaniel.ecommerce_api.payment.Payment;
 import com.gustavosdaniel.ecommerce_api.user.User;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +12,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final EmailService emailService;
-    private static final Logger log = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
     public NotificationServiceImpl(NotificationRepository notificationRepository, EmailService emailService) {
         this.notificationRepository = notificationRepository;
@@ -50,6 +48,26 @@ public class NotificationServiceImpl implements NotificationService {
                 "Pagamento Aprovado  - Pedido #" + payment.getOrder().getId(),
                 html);
 
+    }
+
+    @Override
+    public void notifyPaymentFailed(Payment payment) {
+
+        String failureReason = payment.getFailureReason();
+
+        if (failureReason == null || failureReason.isBlank()) {
+            failureReason = "Ocorreu um erro desconhecido no processamento do pagamento.";
+        }
+
+
+        String html = com.seuecommerce.util.EmailTemplates.buildPaymentFailedTemplate(payment, failureReason);
+
+        createAndSend(
+                payment.getOrder().getUser(),
+                payment.getOrder(),
+                payment,
+                "Pagamento Recusado - Pedido #" + payment.getOrder().getId(),
+                html);
     }
 
     private void createAndSend(User user, Order order, Payment payment, String subject, String content) {

@@ -6,8 +6,7 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.RefundCreateParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,10 +14,7 @@ import java.math.BigDecimal;
 @Service
 public class StripePaymentGatewayService {
 
-    private static final Logger log = LoggerFactory.getLogger(StripePaymentGatewayService.class);
-
     public PaymentIntent createPaymentIntent(Order order) {
-
 
         try {
 

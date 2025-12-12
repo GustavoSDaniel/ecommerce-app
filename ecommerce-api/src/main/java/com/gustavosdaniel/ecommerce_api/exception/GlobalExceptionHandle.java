@@ -3,6 +3,7 @@ package com.gustavosdaniel.ecommerce_api.exception;
 import com.gustavosdaniel.ecommerce_api.address.AddressNotFoundException;
 import com.gustavosdaniel.ecommerce_api.category.CategoryNotFoundException;
 import com.gustavosdaniel.ecommerce_api.category.NameCategoryExistException;
+import com.gustavosdaniel.ecommerce_api.notification.NotificationNotFoundException;
 import com.gustavosdaniel.ecommerce_api.order.*;
 import com.gustavosdaniel.ecommerce_api.payment.*;
 import com.gustavosdaniel.ecommerce_api.product.*;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -415,4 +417,20 @@ public class GlobalExceptionHandle {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(NotificationNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotificationNotFoundException(NotificationNotFoundException ex){
+
+        log.info("Notificação não encontrada {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse(
+                "Notificação não encontrada",
+                "A notificação enviada não foi encontrada",
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
 }

@@ -109,7 +109,7 @@ public class SecurityConfig {
                                 .hasAnyRole("ADMIN", "CUSTOMER")
                                 .requestMatchers(HttpMethod.GET, "/api/v1/orders/my-reference/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
-                                .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/**/confirmPayment").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/*/confirmPayment").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/**/ship").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/**/deliver").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PATCH, "api/v1/orders/canceled/**")
@@ -119,8 +119,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/v1/payments/by-order/**").hasAnyRole("ADMIN", "CUSTOMER")
                                 .requestMatchers(HttpMethod.GET, "api/v1/payments/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/v1/payments/user/**").hasAnyRole("ADMIN", "CUSTOMER")
-                                .requestMatchers(HttpMethod.PATCH, "/api/v1/payments/**/cancel").hasAnyRole("ADMIN", "CUSTOMER")
-                                .requestMatchers(HttpMethod.POST, "/api/v1/payments/**/refund").hasAnyRole("ADMIN", "CUSTOMER")
+                                .requestMatchers(HttpMethod.PATCH, "/api/v1/payments/*/cancel").hasAnyRole("ADMIN", "CUSTOMER")
+                                .requestMatchers(HttpMethod.POST, "/api/v1/payments/*/refund").hasAnyRole("ADMIN", "CUSTOMER")
 
 
                                 .anyRequest().authenticated())

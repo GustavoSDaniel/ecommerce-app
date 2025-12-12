@@ -3,6 +3,7 @@ package com.gustavosdaniel.ecommerce_api.user;
 import com.gustavosdaniel.ecommerce_api.address.Address;
 import com.gustavosdaniel.ecommerce_api.notification.Notification;
 import com.gustavosdaniel.ecommerce_api.order.Order;
+import com.gustavosdaniel.ecommerce_api.util.AuditableBase;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -17,7 +18,7 @@ import java.util.*;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "user_")
-public class User implements UserDetails {
+public class User extends AuditableBase implements UserDetails {
 
     public User() {
 
@@ -68,14 +69,6 @@ public class User implements UserDetails {
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Order> orders = new ArrayList<>();
-
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at", insertable = false)
-    private LocalDateTime updatedAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -182,18 +175,6 @@ public class User implements UserDetails {
 
     public void setOrders(List<Order> orders) {
         this.orders = orders;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override

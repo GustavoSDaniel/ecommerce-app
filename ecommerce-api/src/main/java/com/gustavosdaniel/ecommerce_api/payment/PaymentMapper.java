@@ -3,8 +3,7 @@ package com.gustavosdaniel.ecommerce_api.payment;
 import org.springframework.stereotype.Component;
 
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
 import java.util.UUID;
 
 @Component
@@ -21,30 +20,21 @@ public class PaymentMapper {
         payment.setAmount(paymentRequest.amount());
         payment.setReference(UUID.randomUUID().toString());
 
-        PaymentDetails paymentDetails = paymentRequest.details();
 
-        if (paymentDetails instanceof CreditCardDetails){
+        PaymentMethod method = switch (paymentRequest.details()) {
 
-            payment.setPaymentMethod(PaymentMethod.CREDIT_CARD);
-        }
+            case CreditCardDetails c -> PaymentMethod.CREDIT_CARD;
 
-        if (paymentDetails instanceof DebitCardDetails){
+            case DebitCardDetails d -> PaymentMethod.DEBIT_CARD;
 
-            payment.setPaymentMethod(PaymentMethod.DEBIT_CARD);
+            case PixDetails p        -> PaymentMethod.PIX;
 
-        }
+            case BoletoDetails b     -> PaymentMethod.BOLETO;
 
-        if (paymentDetails instanceof PixDetails){
+            default -> throw new IllegalArgumentException("Metodo de pagamento invalido");
+        };
 
-            payment.setPaymentMethod(PaymentMethod.PIX);
-        }
-
-        if (paymentDetails instanceof BoletoDetails){
-
-            payment.setPaymentMethod(PaymentMethod.BOLETO);
-        } else {
-            throw new IllegalArgumentException("Metodo de pagamento invalido");
-        }
+        payment.setPaymentMethod(method);
 
         return payment;
     }

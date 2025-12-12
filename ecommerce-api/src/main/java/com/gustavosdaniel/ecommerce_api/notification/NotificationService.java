@@ -11,4 +11,6 @@ public interface NotificationService {
     void notifyOrderCreated(Order order);
 
     void notifyPaymentConfirmed(Payment payment);
+
+    void notifyPaymentFailed(Payment payment);
 }

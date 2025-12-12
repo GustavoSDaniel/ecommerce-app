@@ -42,4 +42,33 @@ public class EmailTemplates {
             </html>
             """.formatted(payment.getOrder().getId());
     }
+
+    public static String buildPaymentFailedTemplate(Payment payment, String failureReason) {
+
+        return """
+        <html>
+        <body style="font-family: Arial, sans-serif;">
+            <h2 style="color: #c0392b;">Atenção: Falha no Pagamento</h2>
+            
+            <p>Lamentamos, mas o pagamento do seu pedido <strong>#%s</strong> não pôde ser processado.</p>
+            
+            <div style="border-left: 4px solid #c0392b; padding: 10px; margin: 15px 0; background-color: #fceae9;">
+                <p><strong>Motivo da Falha:</strong> %s</p>
+            </div>
+            
+            <p><strong>O que fazer agora?</strong></p>
+            <ul>
+                <li>Verifique se os dados do cartão/pagamento foram digitados corretamente.</li>
+                <li>Tente novamente na área de pedidos, utilizando outra forma de pagamento.</li>
+                <li>Se o problema persistir, entre em contato com seu banco ou com nosso suporte.</li>
+            </ul>
+            
+            <p>Sua compra está aguardando um novo pagamento.</p>
+        </body>
+        </html>
+        """.formatted(
+                payment.getOrder().getId(),
+                failureReason
+        );
+    }
 }

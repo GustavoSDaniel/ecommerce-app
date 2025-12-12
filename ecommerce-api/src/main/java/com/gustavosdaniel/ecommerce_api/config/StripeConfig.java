@@ -13,6 +13,17 @@ public class StripeConfig {
 
     @PostConstruct
     public void init() {
+
+        if (stripeApiKey == null || stripeApiKey.isBlank()) {
+
+        System.out.println("❌❌❌ ERRO GRAVE: A chave do Stripe está VAZIA! ❌❌❌");
+
+    } else {
+
+        System.out.println("✅ Configuração do Stripe carregada. Chave começa com: "
+                + stripeApiKey.substring(0, Math.min(stripeApiKey.length(), 7)) + "...");
+    }
+
         Stripe.apiKey = stripeApiKey;
     }
 }

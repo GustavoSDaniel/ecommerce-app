@@ -6,7 +6,10 @@ CREATE TABLE user_ (
                        user_role VARCHAR(50) NOT NULL,
                        cpf VARCHAR(255),
                        phone_number VARCHAR(255),
+
+                       created_by VARCHAR(255) NOT NULL,
                        created_at TIMESTAMP NOT NULL,
+                       last_modified_by VARCHAR(255),
                        updated_at TIMESTAMP,
 
                        CONSTRAINT uq_user_email UNIQUE (email),

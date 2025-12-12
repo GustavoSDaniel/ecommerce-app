@@ -2,13 +2,10 @@ package com.gustavosdaniel.ecommerce_api.payment;
 
 import com.gustavosdaniel.ecommerce_api.notification.NotificationServiceImpl;
 import com.gustavosdaniel.ecommerce_api.order.Order;
-import com.gustavosdaniel.ecommerce_api.order.OrderMapper;
 import com.gustavosdaniel.ecommerce_api.order.OrderNotFoundException;
 import com.gustavosdaniel.ecommerce_api.order.OrderRepository;
-import com.gustavosdaniel.ecommerce_api.user.User;
 import com.gustavosdaniel.ecommerce_api.user.UserNotAuthorizationException;
-import com.gustavosdaniel.ecommerce_api.user.UserNotFoundException;
-import com.gustavosdaniel.ecommerce_api.user.UserRepository;
+
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.StripeObject;
@@ -58,15 +55,54 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setOrder(order);
         payment.processPayment();
 
-        PaymentIntent paymentIntent = stripePaymentGatewayService.createPaymentIntent(order);
+        PaymentIntent paymentIntent = null;
+        RuntimeException stripeException = null;
+
+        try {
+            paymentIntent = stripePaymentGatewayService.createPaymentIntent(order);
+
+            if (paymentIntent == null) {
+
+                stripeException = new RuntimeException("Gateway Stripe retornou nulo.");
+            }
+
+        } catch (RuntimeException e) {
+
+            stripeException = e;
+        }
+
+        if (stripeException != null) {
+
+            payment.failPayment(stripeException.getMessage());
+
+            Payment failedPayment = paymentRepository.save(payment);
+
+            try {
+                notificationService.notifyPaymentFailed(failedPayment);
+            } catch (Exception e) {
+                log.warn("Falha ao notificar a falha do pagamento (ID: {}): {}", failedPayment.getId(), e.getMessage());
+            }
+
+            throw new RuntimeException("Falha ao processar pagamento: " + stripeException.getMessage());
+        }
 
         payment.setReference(paymentIntent.getId());
 
         log.info("Intenção de pagamento criada no Stripe: {}", payment.getReference());
 
-        notificationService.notifyPaymentConfirmed(payment);
+        payment.completePayment();
 
-        return paymentRepository.save(payment);
+        payment = paymentRepository.save(payment);
+
+        try {
+            notificationService.notifyPaymentConfirmed(payment);
+
+        } catch (Exception e) {
+
+            log.warn("Erro ao enviar notificação (não impede o pagamento): {}", e.getMessage());
+        }
+
+        return payment;
     }
 
     @Override
@@ -185,6 +221,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             try {
                 stripePaymentGatewayService.cancelPaymentIntent(payment.getReference());
+
             } catch (Exception e){
 
                 log.warn("Erro ao cancelar no Stripe (pode já ter sido cancelado): {}", e.getMessage());
