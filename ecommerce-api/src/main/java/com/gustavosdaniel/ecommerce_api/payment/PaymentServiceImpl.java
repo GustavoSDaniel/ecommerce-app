@@ -8,6 +8,7 @@ import com.gustavosdaniel.ecommerce_api.user.User;
 import com.gustavosdaniel.ecommerce_api.user.UserNotAuthorizationException;
 import com.gustavosdaniel.ecommerce_api.user.UserNotFoundException;
 import com.gustavosdaniel.ecommerce_api.user.UserRepository;
+import com.stripe.model.PaymentIntent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -22,25 +23,24 @@ import java.util.UUID;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
+    private final StripePaymentGatewayService stripePaymentGatewayService;
     private final PaymentGatewaySimulateService paymentGatewaySimulateService;
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
     private static final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
-    public PaymentServiceImpl(PaymentGatewaySimulateService paymentGatewaySimulateService, PaymentRepository paymentRepository, PaymentMapper paymentMapper, OrderRepository orderRepository, UserRepository userRepository) {
+    public PaymentServiceImpl(StripePaymentGatewayService stripePaymentGatewayService, PaymentGatewaySimulateService paymentGatewaySimulateService, PaymentRepository paymentRepository, PaymentMapper paymentMapper, OrderRepository orderRepository) {
+        this.stripePaymentGatewayService = stripePaymentGatewayService;
         this.paymentGatewaySimulateService = paymentGatewaySimulateService;
         this.paymentRepository = paymentRepository;
         this.paymentMapper = paymentMapper;
         this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
     }
 
 
     @Override
     public Payment processPayment(Order order, PaymentRequest paymentRequest) {
-
 
         if (paymentRequest.amount().compareTo(order.getTotalAmount()) < 0){
 
@@ -51,23 +51,13 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setOrder(order);
         payment.processPayment();
 
-        Payment savedPayment = paymentRepository.save(payment);
+        PaymentIntent paymentIntent = stripePaymentGatewayService.createPaymentIntent(order);
 
-        boolean approved = paymentGatewaySimulateService.ProcessPayment(paymentRequest);
+        payment.setReference(paymentIntent.getId());
 
-        if(approved){
+        log.info("Intenção de pagamento criada no Stripe: {}", payment.getReference());
 
-            savedPayment.completePayment();
-
-            log.info("Pagamento aprovado para o pedido {}", order.getId());
-
-        }else {
-
-            savedPayment.failPayment("Transiçao recusada pela operadora");
-
-            log.warn("Pagamento recusado para o pedido {}", order.getId());        }
-
-        return paymentRepository.save(savedPayment);
+        return paymentRepository.save(payment);
     }
 
     @Override
@@ -131,6 +121,45 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public PaymentResponse refundPayment(UUID paymentId, UUID userId) {
+
+        log.info("Iniciando processo de reembolso do pagamento {}", paymentId);
+
+        Payment payment = paymentRepository.findById(paymentId).orElseThrow(PaymentNotFoundException::new);
+
+        if (!payment.getOrder().getUser().getId().equals(userId)) {
+
+            throw new UserNotAuthorizationException();
+        }
+
+        if (!payment.getStatus().equals(PaymentStatus.COMPLETED)) {
+
+            throw new PaymentStatusCompleteException();
+        }
+
+        try {
+
+            stripePaymentGatewayService.refundPayment(payment.getReference());
+
+        }catch (Exception e){
+
+            log.error("Erro ao processar estorno no Stripe", e);
+
+
+            throw new RuntimeException("Erro no Gateway de Pagamento: " + e.getMessage());
+        }
+
+        payment.refundPayment();
+
+        paymentRepository.save(payment);
+
+        log.info("Proesso de reembolso finalizado com sucesso");
+
+        return paymentMapper.toPaymentResponse(payment);
+    }
+
+    @Override
     @jakarta.transaction.Transactional
     public void cancelPayment(UUID paymentId, UUID userId) {
 
@@ -141,6 +170,19 @@ public class PaymentServiceImpl implements PaymentService {
         if (!payment.getOrder().getUser().getId().equals(userId)) {
 
             throw new UserNotAuthorizationException();
+        }
+
+        if (payment.getReference() == null) {
+
+            try {
+                stripePaymentGatewayService.cancelPaymentIntent(payment.getReference());
+            } catch (Exception e){
+
+                log.warn("Erro ao cancelar no Stripe (pode já ter sido cancelado): {}", e.getMessage());
+
+                throw new RuntimeException("Erro ao cancelar transação no gateway.");
+
+            }
         }
 
         payment.cancelPayment();

@@ -71,6 +71,20 @@ public class PaymentController {
         return payment.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/{id}/refund")
+    @Operation(summary = "Faz o estorno do pagamento")
+    public ResponseEntity<PaymentResponse> refundPayment(@PathVariable("id") UUID id, Authentication authentication) {
+
+        JWTUser jwtUser = (JWTUser) authentication.getPrincipal();
+
+        UUID userId = jwtUser.UserId();
+
+        PaymentResponse paymentRefund = paymentService.refundPayment(id, userId);
+
+        return ResponseEntity.ok(paymentRefund);
+
+    }
+
     @PatchMapping("/{id}/cancel")
     @Operation(summary = "Cancelando o pagamento")
     public ResponseEntity<Void> cancelPayment(@PathVariable("id") UUID id, Authentication authentication) {

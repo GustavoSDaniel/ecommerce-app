@@ -4,6 +4,7 @@ import com.gustavosdaniel.ecommerce_api.order.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,6 +18,8 @@ public interface PaymentService {
     Optional<PaymentResponse> getPaymentById(UUID id);
 
     Optional<PaymentResponse>  getPaymentByOrderId(UUID orderId, UUID userId);
+
+    PaymentResponse refundPayment(UUID paymentId, UUID userId);
 
     void cancelPayment(UUID paymentId, UUID userId);
 }

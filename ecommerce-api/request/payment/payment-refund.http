@@ -1,0 +1,4 @@
+### POST faz o estorno do pagamento
+
+POST http://localhost:5050/api/v1/payments/{ID DO PAYMENT}/refund
+Authorization: Bearer <SEU_TOKEN_AQUI>

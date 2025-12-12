@@ -400,4 +400,19 @@ public class GlobalExceptionHandle {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(PaymentStatusRefundException.class)
+    public ResponseEntity<ErrorResponse> handlePaymentStatusRefundException(PaymentStatusRefundException ex){
+
+        log.info("Erro ao realizar o estorno {}", ex.getMessage());
+
+        ErrorResponse error = new ErrorResponse(
+                "Erro de devolução",
+                "Houve um erro no momento de fazer o estorno do valor pois o pagamento não foi completado",
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }

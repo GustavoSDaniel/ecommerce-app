@@ -59,6 +59,18 @@ public class Payment extends AuditableBase {
         this.status = PaymentStatus.PROCESSING;
     }
 
+    public void refundPayment() {
+
+        if (this.status != PaymentStatus.COMPLETED) {
+
+            throw new PaymentStatusRefundException();
+        }
+
+        this.status = PaymentStatus.REFUNDED;
+
+
+    }
+
     public void completePayment() {
 
         if (this.status != PaymentStatus.PROCESSING) {
