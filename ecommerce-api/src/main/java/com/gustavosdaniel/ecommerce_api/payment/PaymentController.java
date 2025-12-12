@@ -27,7 +27,7 @@ public class PaymentController {
         this.userAuthorizationRole = userAuthorizationRole;
     }
 
-    @GetMapping("by-id")
+    @GetMapping("{id}")
     @Operation(summary = "Busca o pagamento pelo ID")
     public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable("id") UUID id) {
 
@@ -96,5 +96,18 @@ public class PaymentController {
         paymentService.cancelPayment(id, userId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("webhook/stripe")
+    @Operation(summary = "Recebe notificações do Stripe (Webhook)")
+    public ResponseEntity<Void> handleStripeWebhook(
+
+            @RequestBody String payload,
+            @RequestHeader("Stripe-Signature") String signature
+    ){
+
+        paymentService.handleGatewayNotification(payload, signature);
+
+        return ResponseEntity.ok().build();
     }
 }

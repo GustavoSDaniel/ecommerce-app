@@ -8,9 +8,13 @@ import com.gustavosdaniel.ecommerce_api.user.User;
 import com.gustavosdaniel.ecommerce_api.user.UserNotAuthorizationException;
 import com.gustavosdaniel.ecommerce_api.user.UserNotFoundException;
 import com.gustavosdaniel.ecommerce_api.user.UserRepository;
+import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
+import com.stripe.model.StripeObject;
+import com.stripe.net.Webhook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -172,7 +176,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new UserNotAuthorizationException();
         }
 
-        if (payment.getReference() == null) {
+        if (payment.getReference() != null) {
 
             try {
                 stripePaymentGatewayService.cancelPaymentIntent(payment.getReference());
@@ -195,4 +199,58 @@ public class PaymentServiceImpl implements PaymentService {
 
         log.info("Pagamento cancelado com sucesso {}", paymentId);
     }
+
+    @Override
+    public void handleGatewayNotification(String payload, String signature) {
+
+        if (stripeWebhookSecret == null || stripeWebhookSecret.isEmpty()) {
+
+            throw new RuntimeException("Stripe Webhook Secret não configurado!");
+        }
+
+        Event event;
+
+        try {
+            event = Webhook.constructEvent(payload, signature, stripeWebhookSecret);
+        } catch (Exception e) {
+
+            log.error("Erro ao validar assinatura do Webhook Stripe", e);
+
+            throw new RuntimeException("Assinatura inválida");
+        }
+
+        if ("payment_intent.succeeded".equals(event.getType())) {
+
+            log.info("Evento de sucesso recebido do Stripe: {}", event.getId());
+
+            StripeObject stripeObject = event.getDataObjectDeserializer().getObject().orElse(null);
+
+            if (stripeObject instanceof PaymentIntent paymentIntent) {
+
+                String stripeId = paymentIntent.getId();
+
+                Payment payment = paymentRepository.findByReference(stripeId).orElseThrow(PaymentNotFoundException::new);
+
+                if (payment.getStatus() == PaymentStatus.COMPLETED) {
+
+                    log.info("Pagamento {} já foi processado anteriormente.", payment.getId());
+                    return;
+                }
+
+                payment.completePayment();
+                paymentRepository.save(payment);
+
+                log.info("Pagamento confirmado com sucesso! Order ID: {}", payment.getOrder().getId());
+
+            }else {
+                log.warn("Objeto do evento não é um PaymentIntent valido.");
+            }
+        }else {
+            log.debug("Evento ignorado: {}", event.getType());
+        }
+
+    }
+
+    @Value("${stripe.webhook-secret}")
+    private String stripeWebhookSecret;
 }

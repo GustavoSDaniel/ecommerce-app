@@ -32,7 +32,8 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui.html",
             "/swagger-resources/**",
-            "/webjars/**"
+            "/webjars/**",
+            "/api/v1/payments/webhook/stripe"
     };
 
     @Bean
@@ -116,7 +117,7 @@ public class SecurityConfig {
 
                                 //Payment
                                 .requestMatchers(HttpMethod.GET, "/api/v1/payments/by-order/**").hasAnyRole("ADMIN", "CUSTOMER")
-                                .requestMatchers(HttpMethod.GET, "api/v1/payments/by-id/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "api/v1/payments/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/v1/payments/user/**").hasAnyRole("ADMIN", "CUSTOMER")
                                 .requestMatchers(HttpMethod.PATCH, "/api/v1/payments/**/cancel").hasAnyRole("ADMIN", "CUSTOMER")
                                 .requestMatchers(HttpMethod.POST, "/api/v1/payments/**/refund").hasAnyRole("ADMIN", "CUSTOMER")

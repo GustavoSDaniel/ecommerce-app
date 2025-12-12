@@ -22,4 +22,6 @@ public interface PaymentService {
     PaymentResponse refundPayment(UUID paymentId, UUID userId);
 
     void cancelPayment(UUID paymentId, UUID userId);
+
+    void handleGatewayNotification(String payload, String signature);
 }
