@@ -2,6 +2,8 @@ package com.gustavosdaniel.ecommerce_api.notification;
 
 import com.gustavosdaniel.ecommerce_api.order.Order;
 import com.gustavosdaniel.ecommerce_api.payment.Payment;
+import com.gustavosdaniel.ecommerce_api.user.User;
+import com.gustavosdaniel.ecommerce_api.util.AuditableBase;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -12,51 +14,59 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
+@Table(name = "tb_notifications")
 @EntityListeners(AuditingEntityListener.class)
-public class Notification {
+public class Notification extends AuditableBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)
-    private String sender;
-
-    @Column(nullable = false)
     private String recipient;
 
     @Column(nullable = false)
+    private String subject;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private NotificationStatus status = NotificationStatus.PENDING;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "sent_at")
     private LocalDateTime sentAt;
 
+    @Column(name = "failure_reason", length = 500)
+    private String failureReason;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    public void markAsSent() {
 
-    @LastModifiedDate
-    @Column(name = "updated_at", insertable = false)
-    private LocalDateTime updatedAt;
+        this.status = NotificationStatus.SENT;
+        this.sentAt = LocalDateTime.now();
+    }
+
+    public void markAsFailed(String reason){
+
+        this.status = NotificationStatus.FAILED;
+        this.failureReason = reason;
+    }
 
     public UUID getId() {
         return id;
-    }
-
-    public String getSender() {
-        return sender;
-    }
-
-    public void setSender(String sender) {
-        this.sender = sender;
     }
 
     public String getRecipient() {
@@ -67,6 +77,14 @@ public class Notification {
         this.recipient = recipient;
     }
 
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
     public String getContent() {
         return content;
     }
@@ -75,12 +93,24 @@ public class Notification {
         this.content = content;
     }
 
+    public NotificationStatus getStatus() {
+        return status;
+    }
+
     public LocalDateTime getSentAt() {
         return sentAt;
     }
 
-    public void setSentAt(LocalDateTime sentAt) {
-        this.sentAt = sentAt;
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Order getOrder() {
@@ -97,18 +127,6 @@ public class Notification {
 
     public void setPayment(Payment payment) {
         this.payment = payment;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override

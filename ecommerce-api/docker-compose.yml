@@ -14,6 +14,8 @@ services:
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET}
+      - MAIL_HOST=mailhog
+      - MAIL_PORT=1025
     ports:
       - "5050:5050"
     networks:
@@ -91,6 +93,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: ecommercce-mailhog
+    ports:
+      - 5054:1025
+      - 5055:8025
+    networks:
+      - ecommerce-network
+
+
 
 networks:
   ecommerce-network:

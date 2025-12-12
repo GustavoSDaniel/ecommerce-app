@@ -28,6 +28,26 @@ spring:
       host: redis
       port: 6379
 
+  mail:
+    host: mailhog
+    port: 1025
+    username: user
+    password: password
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+
+app:
+  mail:
+    from: noreply@ecommerceGustavo.com.br
+    from-name: My E-commerce By Gustavo
+
 stripe:
   api-key: ${STRIPE_API_KEY}
   webhook-secret: ${STRIPE_WEBHOOK_SECRET}

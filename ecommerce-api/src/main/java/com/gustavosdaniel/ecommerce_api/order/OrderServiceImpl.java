@@ -1,5 +1,7 @@
 package com.gustavosdaniel.ecommerce_api.order;
 
+import com.gustavosdaniel.ecommerce_api.notification.NotificationService;
+import com.gustavosdaniel.ecommerce_api.notification.NotificationServiceImpl;
 import com.gustavosdaniel.ecommerce_api.orderItem.OrderItem;
 import com.gustavosdaniel.ecommerce_api.orderItem.OrderItemRequest;
 import com.gustavosdaniel.ecommerce_api.payment.*;
@@ -29,15 +31,17 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final PaymentService paymentService;
     private final PaymentMapper paymentMapper;
+    private final NotificationServiceImpl notificationService;
     private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, UserRepository userRepository, ProductRepository productRepository, PaymentService paymentService, PaymentMapper paymentMapper) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, UserRepository userRepository, ProductRepository productRepository, PaymentService paymentService, PaymentMapper paymentMapper, NotificationServiceImpl notificationService) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.paymentService = paymentService;
         this.paymentMapper = paymentMapper;
+        this.notificationService = notificationService;
     }
 
 
@@ -82,6 +86,8 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("Pedido criado com sucesso. ID: {} | Referência: {} | Total: {}",
                 newOrder.getId(), newOrder.getReference(), newOrder.getTotalAmount());
+
+        notificationService.notifyOrderCreated(saveOrder);
 
         return orderMapper.toOrderResponse(saveOrder);
     }

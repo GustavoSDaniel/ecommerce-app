@@ -1,5 +1,6 @@
 package com.gustavosdaniel.ecommerce_api.payment;
 
+import com.gustavosdaniel.ecommerce_api.notification.NotificationServiceImpl;
 import com.gustavosdaniel.ecommerce_api.order.Order;
 import com.gustavosdaniel.ecommerce_api.order.OrderMapper;
 import com.gustavosdaniel.ecommerce_api.order.OrderNotFoundException;
@@ -32,14 +33,16 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final OrderRepository orderRepository;
+    private final NotificationServiceImpl notificationService;
     private static final Logger log = LoggerFactory.getLogger(PaymentServiceImpl.class);
 
-    public PaymentServiceImpl(StripePaymentGatewayService stripePaymentGatewayService, PaymentGatewaySimulateService paymentGatewaySimulateService, PaymentRepository paymentRepository, PaymentMapper paymentMapper, OrderRepository orderRepository) {
+    public PaymentServiceImpl(StripePaymentGatewayService stripePaymentGatewayService, PaymentGatewaySimulateService paymentGatewaySimulateService, PaymentRepository paymentRepository, PaymentMapper paymentMapper, OrderRepository orderRepository, NotificationServiceImpl notificationService) {
         this.stripePaymentGatewayService = stripePaymentGatewayService;
         this.paymentGatewaySimulateService = paymentGatewaySimulateService;
         this.paymentRepository = paymentRepository;
         this.paymentMapper = paymentMapper;
         this.orderRepository = orderRepository;
+        this.notificationService = notificationService;
     }
 
 
@@ -60,6 +63,8 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setReference(paymentIntent.getId());
 
         log.info("Intenção de pagamento criada no Stripe: {}", payment.getReference());
+
+        notificationService.notifyPaymentConfirmed(payment);
 
         return paymentRepository.save(payment);
     }

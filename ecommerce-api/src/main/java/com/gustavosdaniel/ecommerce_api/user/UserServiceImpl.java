@@ -2,6 +2,7 @@ package com.gustavosdaniel.ecommerce_api.user;
 
 import com.gustavosdaniel.ecommerce_api.address.Address;
 import com.gustavosdaniel.ecommerce_api.address.AddressMapper;
+import com.gustavosdaniel.ecommerce_api.notification.NotificationServiceImpl;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,13 +21,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final AddressMapper addressMapper;
+    private final NotificationServiceImpl notificationService;
     private final static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, AddressMapper addressMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, AddressMapper addressMapper, NotificationServiceImpl notificationService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
 
         this.addressMapper = addressMapper;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -48,6 +51,8 @@ public class UserServiceImpl implements UserService {
         User userRegister = userRepository.save(newUser);
 
         log.info("Saved user {}", userRegister);
+
+        notificationService.notifyUserRegistration(userRegister);
 
         return userMapper.toUserRegisterResponse(userRegister);
     }

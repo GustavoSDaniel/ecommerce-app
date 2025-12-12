@@ -1,6 +1,7 @@
 package com.gustavosdaniel.ecommerce_api.user;
 
 import com.gustavosdaniel.ecommerce_api.address.Address;
+import com.gustavosdaniel.ecommerce_api.notification.Notification;
 import com.gustavosdaniel.ecommerce_api.order.Order;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -56,6 +57,12 @@ public class User implements UserDetails {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",
+    fetch = FetchType.LAZY,
+    cascade = {CascadeType.PERSIST,CascadeType.MERGE},
+    orphanRemoval = true)
+    private List<Notification> notifications = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",
             fetch = FetchType.LAZY,
@@ -159,6 +166,14 @@ public class User implements UserDetails {
 
     public void setAddresses(List<Address> addresses) {
         this.addresses = addresses;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     public List<Order> getOrders() {

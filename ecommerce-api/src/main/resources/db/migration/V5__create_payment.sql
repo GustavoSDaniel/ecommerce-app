@@ -1,21 +1,16 @@
 CREATE TABLE payment (
                          id UUID PRIMARY KEY,
-                         reference VARCHAR(255) UNIQUE NOT NULL,
+                         reference VARCHAR(255) NOT NULL,
                          amount NUMERIC(19, 2) NOT NULL,
-
-
                          status VARCHAR(50) NOT NULL,
                          payment_method VARCHAR(50) NOT NULL,
-
-                         confirmed_at TIMESTAMP WITHOUT TIME ZONE,
+                         confirmed_at TIMESTAMP,
                          failure_reason VARCHAR(500),
 
-
                          created_by VARCHAR(255) NOT NULL,
-                         created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                         created_at TIMESTAMP NOT NULL,
                          last_modified_by VARCHAR(255),
-                         updated_at TIMESTAMP WITHOUT TIME ZONE
+                         updated_at TIMESTAMP,
 
-                        CONSTRAINT pk_payments PRIMARY KEY (id),
-                        CONSTRAINT uk_payments_reference UNIQUE (reference)
+                         CONSTRAINT uq_payment_reference UNIQUE (reference)
 );
