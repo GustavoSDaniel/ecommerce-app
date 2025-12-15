@@ -110,8 +110,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/v1/orders/my-reference/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
                                 .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/*/confirmPayment").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/**/ship").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/**/deliver").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/*/ship").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/*/deliver").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PATCH, "api/v1/orders/canceled/**")
                                 .hasAnyRole("ADMIN", "CUSTOMER")
 

@@ -3,6 +3,10 @@ package com.gustavosdaniel.ecommerce_api.category;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@CacheConfig(cacheNames = "categories")
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -26,6 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(allEntries = true)
     public CategoryResponse createCategory(CategoryRequest request) {
 
         log.info("create Category");
@@ -45,6 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable(key = "'categories-page' + #pageable.pageNumber + '-size' + #pageable.pageSize")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<CategoryResponse> getCategories(Pageable pageable) {
 
@@ -64,6 +71,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable(key = "#id")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public CategoryResponse getCategoryById(Integer id) {
 
@@ -78,6 +86,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable(key = "'category-search-' + #root.target.normalizeSearchTerm(#name)")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<CategoryResponse> searchCategories(String name) {
 
@@ -106,6 +115,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(key = "#id"),
+            @CacheEvict(allEntries = true)
+    })
     public CategoryUpdateResponse updateCategory(Integer id, CategoryUpdateRequest request) {
 
         Category category = categoryRepository.findById(id).orElseThrow(CategoryNotFoundException::new);
@@ -131,6 +144,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(key = "#id"),
+            @CacheEvict(allEntries = true)
+    })
     public void deleteCategory(Integer id) {
 
         log.info("delete Category");

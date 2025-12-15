@@ -52,6 +52,12 @@ app:
     from: noreply@ecommerceGustavo.com.br
     from-name: My E-commerce By Gustavo
 
+  cache:
+    ttl:
+      products: 3600
+      categories: 7200
+      users: 1800
+
 stripe:
   api-key: ${STRIPE_API_KEY}
   webhook-secret: ${STRIPE_WEBHOOK_SECRET}

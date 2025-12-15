@@ -6,6 +6,9 @@ import com.gustavosdaniel.ecommerce_api.notification.NotificationServiceImpl;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,24 +19,25 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@CacheConfig(cacheNames = "users")
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final AddressMapper addressMapper;
     private final NotificationServiceImpl notificationService;
-    private final static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final  Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, AddressMapper addressMapper, NotificationServiceImpl notificationService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-
         this.addressMapper = addressMapper;
         this.notificationService = notificationService;
     }
 
     @Override
     @Transactional
+    @CacheEvict(allEntries = true)
     public UserRegisterResponse register(UserRegisterRequest user) {
 
         log.info("Register user {}", user.userName());
@@ -58,6 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(key = "'all-users-page-' + #pageable.pageNumber + '-size-' + #pageable.pageSize")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<UserResponse> getUsers(Pageable pageable) {
 
@@ -75,6 +80,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Optional<UserResponse> getUserByEmail(String email) {
 
         log.info("Iniciando busca de usuário pelo email: {}", email);
@@ -106,6 +112,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(allEntries = true)
     public UserUpdateResponse updateUser(UUID id, UserUpdateRequest request) {
 
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
@@ -153,6 +160,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(allEntries = true)
     public UserCpfResponse addCpfToUser(UUID id, UserAddCpf userAddCpf) {
 
         User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
@@ -189,6 +197,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(allEntries = true)
     public void deleteUserById(UUID id) {
 
         log.info("Delete user {}", id);

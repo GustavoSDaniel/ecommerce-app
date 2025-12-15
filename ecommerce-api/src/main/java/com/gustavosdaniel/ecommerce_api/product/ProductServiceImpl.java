@@ -6,11 +6,16 @@ import com.gustavosdaniel.ecommerce_api.category.CategoryRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@CacheConfig(cacheNames = "products")
 public class ProductServiceImpl implements ProductService {
 
     private final ProductMapper productMapper;
@@ -26,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(allEntries = true)
     public ProductResponse createProduct(Integer categoryId, ProductRequest productRequest) {
 
         log.info("Criando produto {}", productRequest.name());
@@ -52,6 +58,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(key = "'all-products-' + #pageable.pageNumber + '-size-' + #pageable.pageSize")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<ProductResponse> getAllProducts(Pageable pageable) {
 
@@ -66,6 +73,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(key = "'all-products-active-' + #pageable.pageNumber + '-size-' + #pageable.pageSize")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<ProductResponse> getAllActiveProducts(Pageable pageable) {
 
@@ -79,6 +87,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(key = "'all-products-active-false' + #pageable.pageNumber + '-size-' + #pageable.pageSize")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<ProductResponse> getAllActiveFalseProducts(Pageable pageable) {
 
@@ -97,6 +106,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(key = "'product-by-category ' + #categoryId + '-page-' + #pageable.pageNumber + '-size-' + #pageable.pageSize")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<ProductResponse> getAllProductsByCategoryId(Integer categoryId, Pageable pageable) {
 
@@ -117,6 +127,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(key = "'product-search' + #name + '-page-' + #pageable.pageNumber + '-size-' + #pageable.pageSize")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public Page<ProductResponse> searchProductByName(String name, Pageable pageable) {
 
@@ -142,6 +153,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(key = "#productId")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public ProductResponse getProductById(Long productId) {
 
@@ -157,6 +169,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(key = "#productId"),
+            @CacheEvict(allEntries = true)
+    })
     public ProductUpdateResponse updateProduct(Long productId, ProductUpdateRequest productRequest) {
 
         log.info("Iniciando atualização do produto ID: {}", productId);
@@ -183,6 +199,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(key = "#productId")
     public StockUpdateResponse updateStock(Long productId, StockUpdateRequest stockUpdateDTO)
             throws StockOperationExceptionAddAndRemove, StockOperationExceptionSet, InsuficienteStockException {
 
@@ -206,6 +223,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(key = "#productId"),
+            @CacheEvict(allEntries = true)
+    })
     public void reactivateProduct(Long productId) {
 
         log.info("Reativando produto {}", productId);
@@ -229,6 +250,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(key = "#productId"),
+            @CacheEvict(allEntries = true)
+    })
     public void desativeProduct(Long productId) {
 
         log.info("Desativando produto {}", productId);
@@ -252,6 +277,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(key = "#id"),
+            @CacheEvict(allEntries = true)
+    })
     public void deleteProduct(Long id) {
 
         log.info("Deletando produto {}", id);
