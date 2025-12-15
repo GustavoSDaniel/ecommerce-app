@@ -82,7 +82,6 @@ Sistema completo de e-commerce desenvolvido com **Spring Boot 3**, projetado com
 
 ### 📧 Sistema de Notificações
 - ✅ Notificações por email (via MailHog em desenvolvimento)
-- ✅ Templates HTML responsivos com Thymeleaf
 - ✅ Envio assíncrono de emails
 - ✅ Notificações automáticas:
   - Cadastro de novo usuário
